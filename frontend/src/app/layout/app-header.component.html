@@ -1,0 +1,91 @@
+<header class="app-header">
+  <div class="app-header__leading">
+    @if (showSidebarToggle$ | async) {
+      <button class="app-header__menu-toggle" type="button" (click)="toggleSidebar()">
+        <i class="pi pi-bars"></i>
+      </button>
+    }
+    <a class="app-header__brand" routerLink="/">
+      <img
+        class="app-header__logo"
+        [src]="(currentLang$ | async) === 'fa' ? 'icons/logo_fa.png' : 'icons/logo_en.png'"
+        alt="Nik Hatam"
+      />
+    </a>
+  </div>
+
+  <div class="app-header__actions">
+    <div class="app-header__menu">
+      <button class="app-header__menu-trigger" type="button" (click)="toggleMenu()">
+        @if (isAuthenticated$ | async) {
+          @if ((currentUser$ | async)?.avatar_url) {
+            <img
+              class="app-header__avatar-image"
+              [src]="(currentUser$ | async)?.avatar_url ?? ''"
+              alt="avatar"
+            />
+          } @else {
+            <span class="app-header__avatar">{{ userInitials$ | async }}</span>
+          }
+        } @else {
+          <i class="pi pi-user"></i>
+        }
+      </button>
+
+      @if (isMenuOpen) {
+        <div class="app-header__menu-panel">
+          <div class="app-header__menu-list">
+            @for (theme of themes; track theme.value) {
+              @if (theme.value !== (currentTheme$ | async)) {
+                <button class="app-header__menu-item" type="button" (click)="setTheme(theme.value)">
+                  <i [class]="theme.icon"></i>
+                  <span>{{ theme.labelKey | transloco }}</span>
+                </button>
+              }
+            }
+          </div>
+
+          <div class="app-header__menu-divider"></div>
+
+          <div class="app-header__menu-list">
+            @for (lang of languages; track lang.value) {
+              @if (lang.value !== (currentLang$ | async)) {
+                <button class="app-header__menu-item" type="button" (click)="setLanguage(lang.value)">
+                  <i class="pi pi-globe"></i>
+                  <span>{{ lang.label }}</span>
+                </button>
+              }
+            }
+          </div>
+
+          <div class="app-header__menu-divider"></div>
+
+          @if (isAuthenticated$ | async) {
+            <button class="app-header__menu-item" type="button" (click)="navigateTo('/dashboard')">
+              <i class="pi pi-th-large"></i>
+              <span>{{ 'nav.dashboard' | transloco }}</span>
+            </button>
+            <button class="app-header__menu-item" type="button" (click)="navigateTo('/profile')">
+              <i class="pi pi-id-card"></i>
+              <span>{{ 'nav.profile' | transloco }}</span>
+            </button>
+            <div class="app-header__menu-divider"></div>
+            <button class="app-header__menu-item app-header__menu-item--danger" type="button" (click)="logout()">
+              <i class="pi pi-sign-out"></i>
+              <span>{{ 'nav.logout' | transloco }}</span>
+            </button>
+          } @else {
+            <button class="app-header__menu-item" type="button" (click)="navigateTo('/login')">
+              <i class="pi pi-sign-in"></i>
+              <span>{{ 'nav.login' | transloco }}</span>
+            </button>
+            <button class="app-header__menu-item" type="button" (click)="navigateTo('/register')">
+              <i class="pi pi-user-plus"></i>
+              <span>{{ 'nav.register' | transloco }}</span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</header>

@@ -1,0 +1,40 @@
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDEs/editors
+.idea/
+.vscode/
+
+# OS temp files
+*.swp
+*.swo
+*.tmp
+
+# Node
+node_modules/
+dist/
+coverage/
+
+# Laravel / PHP
+backend/vendor/
+backend/.env
+backend/.env.*.local
+backend/storage/*.key
+backend/storage/app/
+backend/storage/framework/
+backend/storage/logs/
+backend/bootstrap/cache/*
+!backend/bootstrap/cache/.gitignore
+
+# PHPUnit
+backend/.phpunit.result.cache
+
+# Composer
+backend/composer.lock

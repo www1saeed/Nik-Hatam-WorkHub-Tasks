@@ -1,0 +1,10 @@
+.dashboard {
+  padding: 1rem 0;
+}
+
+.dashboard__card {
+  padding: 2rem;
+  border-radius: 18px;
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}

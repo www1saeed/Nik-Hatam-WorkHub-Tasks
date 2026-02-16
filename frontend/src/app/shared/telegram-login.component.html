@@ -1,0 +1,15 @@
+@if (isConfigured) {
+  <div class="telegram-login">
+    <div class="telegram-login__title">{{ 'auth.telegram.title' | transloco }}</div>
+    <div class="telegram-login__subtitle">{{ 'auth.telegram.subtitle' | transloco }}</div>
+    <div data-telegram-container class="telegram-login__widget"></div>
+
+    @if (isLoading) {
+      <div class="telegram-login__hint">{{ 'auth.telegram.loading' | transloco }}</div>
+    }
+
+    @if (errorMessage) {
+      <div class="telegram-login__error">{{ errorMessage | transloco }}</div>
+    }
+  </div>
+}

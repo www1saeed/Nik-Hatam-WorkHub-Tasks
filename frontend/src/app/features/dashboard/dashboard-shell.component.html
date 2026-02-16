@@ -1,0 +1,68 @@
+<section
+  class="dashboard-shell"
+  [class.is-rtl]="(currentLang$ | async) === 'fa'"
+  [class.is-ltr]="(currentLang$ | async) !== 'fa'"
+  [class.is-collapsed]="isCollapsed"
+>
+  <aside class="dashboard-shell__sidebar" [class.is-open]="isSidebarOpen">
+    <div class="dashboard-shell__sidebar-header">
+      <div class="dashboard-shell__sidebar-actions">
+        <button
+          class="dashboard-shell__collapse"
+          type="button"
+          (click)="toggleCollapse()"
+          [class.is-collapsed]="isCollapsed"
+        >
+          <i class="pi pi-angle-double-left"></i>
+        </button>
+        <button class="dashboard-shell__close" type="button" (click)="closeSidebar()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+    </div>
+    @if (currentUser$ | async; as user) {
+      <nav class="dashboard-shell__nav">
+        @for (section of getVisibleSections(user); track section.key) {
+          <div class="dashboard-shell__group">
+            @if (section.labelKey) {
+              <div class="dashboard-shell__group-title">{{ section.labelKey | transloco }}</div>
+            }
+            @for (item of section.items; track item.route) {
+              <a
+                [routerLink]="item.route"
+                routerLinkActive="is-active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="closeSidebar()"
+                [attr.data-label]="item.labelKey | transloco"
+              >
+                <i class="{{ item.icon }}"></i>
+                <span>{{ item.labelKey | transloco }}</span>
+              </a>
+            }
+          </div>
+        }
+        <div class="dashboard-shell__footer">
+          <div class="dashboard-shell__group">
+            <div class="dashboard-shell__group-title">{{ 'admin.sidebar.groups.account' | transloco }}</div>
+            <a href="/profile" (click)="closeSidebar()"
+               [attr.data-label]="'nav.profile' | transloco">
+              <i class="pi pi-user"></i>
+              <span>{{ 'nav.profile' | transloco }}</span>
+            </a>
+            <a href="/" (click)="logout()"
+               [attr.data-label]="'nav.logout' | transloco">
+              <i class="pi pi-sign-out"></i>
+              <span>{{ 'nav.logout' | transloco }}</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+    }
+  </aside>
+
+  <div class="dashboard-shell__content">
+    <div class="dashboard-shell__page">
+      <router-outlet />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,292 @@
+/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+
+:root {
+  --app-shell-bg: #f6f8fb;
+  --card-bg: #ffffff;
+  --card-shadow: 0 1px 2px rgba(16, 24, 40, 0.1), 0 4px 12px rgba(16, 24, 40, 0.06);
+  --text-muted: #5f6b7a;
+  --text-strong: #0f172a;
+  --surface-soft: #f2f5f9;
+  --surface-subtle: #eef2f6;
+  --border-color: #d7dfe7;
+  --accent: #006a6a;
+  --accent-dark: #005657;
+  --accent-secondary: #006a6a;
+  --accent-shadow: 0 2px 8px rgba(0, 106, 106, 0.25);
+  --brand-blue: #006a6a;
+  --brand-blue-strong: #005657;
+  --brand-blue-light: #14b8a6;
+  --telegram-blue: #229ed9;
+  --brand-blue-deep: #004f50;
+  --brand-blue-soft: rgba(0, 106, 106, 0.14);
+  --brand-blue-soft-strong: rgba(0, 106, 106, 0.2);
+  --brand-blue-soft-light: rgba(0, 106, 106, 0.08);
+  --brand-gold: #006a6a;
+  --brand-gold-dark: #005657;
+  --brand-gold-hover: #005c5d;
+  --brand-gold-deep: #004647;
+  --brand-white: #ffffff;
+  --brand-text: #0f172a;
+  --brand-muted: #5f6b7a;
+  --brand-disabled: #9ca3af;
+  --brand-danger: #b91c1c;
+  --brand-danger-strong: #ef4444;
+  --brand-danger-soft: rgba(248, 113, 113, 0.12);
+  --brand-success: #166534;
+  --brand-success-soft: rgba(22, 163, 74, 0.12);
+  --brand-warning: #92400e;
+  --brand-warning-soft: rgba(245, 158, 11, 0.12);
+  --state-info-bg: rgba(0, 106, 106, 0.1);
+  --state-info-strong-bg: rgba(0, 106, 106, 0.18);
+  --state-info-border: rgba(0, 106, 106, 0.3);
+  --state-info-text: #0b5253;
+  --state-warning-bg: rgba(245, 158, 11, 0.1);
+  --state-link: #0b5f58;
+  --brand-primary-dark: #0b5f58;
+  --brand-on-primary: #f8fafc;
+  --brand-shell-bg: var(--surface-soft);
+
+  /* PrimeNG theme tokens (global) */
+  --p-primary-color: var(--accent);
+  --p-primary-hover-color: var(--accent-dark);
+  --p-primary-contrast-color: var(--brand-white);
+  --p-inputtext-border-color: color-mix(in srgb, var(--accent) 20%, var(--border-color));
+  --p-inputtext-border-radius: 12px;
+  --p-inputtext-shadow: none;
+  --p-datepicker-dropdown-background: var(--accent);
+  --p-datepicker-dropdown-hover-background: var(--accent-dark);
+  --p-datepicker-dropdown-border-color: transparent;
+  --p-datepicker-dropdown-hover-border-color: transparent;
+  --p-datepicker-dropdown-color: var(--brand-white);
+  --p-datepicker-dropdown-hover-color: var(--brand-white);
+}
+
+html[data-theme="dark"] {
+  --app-shell-bg: #0b1220;
+  --card-bg: #111a2b;
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px rgba(0, 0, 0, 0.35);
+  --text-muted: #9aa7bb;
+  --text-strong: #e7edf6;
+  --surface-soft: #162237;
+  --surface-subtle: #1a2a42;
+  --border-color: #24324a;
+  --brand-white: #e7edf6;
+  --brand-text: #e7edf6;
+  --brand-muted: #9aa7bb;
+  --brand-disabled: #6f7f98;
+  --state-info-bg: rgba(20, 184, 166, 0.16);
+  --state-info-strong-bg: rgba(20, 184, 166, 0.26);
+  --state-info-border: rgba(20, 184, 166, 0.35);
+  --state-info-text: #93efe4;
+  --state-link: #86dcd2;
+}
+
+.pi.pi-telegram {
+  color: var(--telegram-blue) !important;
+}
+
+/* Force PrimeNG DatePicker colors (override theme). */
+.p-datepicker-month-selected,
+.p-datepicker-year-selected,
+.p-datepicker .p-datepicker-day-selected {
+  background: var(--brand-blue) !important;
+  color: var(--brand-white) !important;
+}
+
+.p-datepicker .p-datepicker-dropdown {
+  background: var(--accent) !important;
+  border: 1px solid var(--accent-dark) !important;
+  color: var(--brand-white) !important;
+}
+
+.p-datepicker .p-datepicker-dropdown:hover {
+  background: var(--accent-dark) !important;
+  border-color: var(--accent-dark) !important;
+  color: var(--brand-white) !important;
+}
+
+.p-datepicker .p-datepicker-day-selected {
+  border: 1px solid var(--brand-blue-deep) !important;
+}
+
+.p-datepicker .p-datepicker-input {
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border-color)) !important;
+  border-radius: 12px 0 0 12px !important;
+  box-shadow: none !important;
+}
+
+html[dir="rtl"] .p-datepicker .p-datepicker-input {
+  border-radius: 0 12px 12px 0 !important;
+}
+
+/* Central PrimeNG DatePicker surface + text + border overrides */
+.p-datepicker,
+.p-datepicker-panel,
+.p-datepicker-header,
+.p-datepicker-calendar {
+  background: var(--brand-white) !important;
+  color: var(--brand-text) !important;
+}
+
+.p-datepicker {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+}
+
+.p-datepicker-panel {
+   border-radius: 16px !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+.p-datepicker .p-datepicker-prev-button,
+.p-datepicker .p-datepicker-next-button {
+  background: transparent !important;
+  color: var(--brand-blue-deep) !important;
+}
+
+.p-datepicker .p-datepicker-prev-button:hover,
+.p-datepicker .p-datepicker-next-button:hover {
+  background: var(--brand-blue-soft-light) !important;
+}
+
+.p-datepicker .p-datepicker-weekheader,
+.p-datepicker .p-datepicker-weekday {
+  color: var(--brand-muted) !important;
+}
+
+.p-datepicker .p-datepicker-select-month:focus,
+.p-datepicker .p-datepicker-select-year:focus {
+  box-shadow: 0 0 0 3px rgba(0, 106, 106, 0.18) !important;
+  border-color: var(--brand-blue) !important;
+}
+
+.p-datepicker .p-datepicker-day {
+  color: var(--brand-text) !important;
+}
+
+.p-datepicker .p-datepicker-day:hover {
+  background: var(--brand-blue-soft) !important;
+}
+
+.p-datepicker .p-datepicker-day.p-disabled,
+.p-datepicker .p-datepicker-day.p-disabled:hover {
+  color: var(--brand-disabled) !important;
+  background: transparent !important;
+}
+
+html[data-theme="dark"] .p-datepicker,
+html[data-theme="dark"] .p-datepicker-panel,
+html[data-theme="dark"] .p-datepicker-header,
+html[data-theme="dark"] .p-datepicker-calendar {
+  background: var(--card-bg) !important;
+  color: var(--text-strong) !important;
+}
+
+html[data-theme="dark"] .p-datepicker {
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .p-datepicker .p-datepicker-weekheader,
+html[data-theme="dark"] .p-datepicker .p-datepicker-weekday {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme="dark"] .p-datepicker .p-datepicker-day {
+  color: var(--text-strong) !important;
+}
+
+html[data-theme="dark"] .p-datepicker .p-datepicker-day:hover {
+  background: var(--brand-blue-soft) !important;
+}
+
+html[data-theme="dark"] .p-datepicker .p-datepicker-day.p-disabled,
+html[data-theme="dark"] .p-datepicker .p-datepicker-day.p-disabled:hover {
+  color: var(--brand-disabled) !important;
+}
+
+@font-face {
+  font-family: "IRANSans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url("/fonts/IRANSans/IRANSans.woff2") format("woff2"),
+    url("/fonts/IRANSans/IRANSans.woff") format("woff"),
+    url("/fonts/IRANSans/IRANSans.ttf") format("truetype"),
+    url("/fonts/IRANSans/IRANSans.eot");
+}
+
+@font-face {
+  font-family: "IRANSans";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src:
+    url("/fonts/IRANSans/IRANSans-Black.woff2") format("woff2"),
+    url("/fonts/IRANSans/IRANSans-Black.woff") format("woff"),
+    url("/fonts/IRANSans/IRANSans-Black.ttf") format("truetype"),
+    url("/fonts/IRANSans/IRANSans-Black.eot");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src:
+    url("/fonts/inter/inter-latin-wght-normal-NRMW37G5.woff2") format("woff2"),
+    url("/fonts/inter/inter-latin-wght-normal-O25CN4JL.woff2") format("woff2"),
+    url("/fonts/inter/inter-latin-wght-normal-OPIJAQLS.woff2") format("woff2");
+}
+
+html {
+  background: var(--app-shell-bg);
+}
+
+html[lang="fa"] {
+  font-family: "IRANSans", "Segoe UI", sans-serif;
+}
+
+html:not([lang="fa"]) {
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+html[lang="fa"] body,
+html[lang="fa"] button,
+html[lang="fa"] input,
+html[lang="fa"] select,
+html[lang="fa"] option,
+html[lang="fa"] textarea {
+  font-family: "IRANSans", "Segoe UI", sans-serif;
+}
+
+html:not([lang="fa"]) body,
+html:not([lang="fa"]) button,
+html:not([lang="fa"]) input,
+html:not([lang="fa"]) select,
+html:not([lang="fa"]) option,
+html:not([lang="fa"]) textarea {
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--brand-text);
+  min-height: 100vh;
+}
+
+:root {
+  --admin-gap: 1.25rem;
+  --admin-gap-sm: 1rem;
+  --admin-radius: 12px;
+  --admin-radius-sm: 10px;
+  --admin-radius-lg: 18px;
+}

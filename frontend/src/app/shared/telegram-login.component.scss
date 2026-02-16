@@ -1,0 +1,36 @@
+﻿.telegram-login {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent);
+  background: var(--state-info-bg);
+}
+
+.telegram-login__title {
+  font-weight: 700;
+}
+
+.telegram-login__subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.telegram-login__widget {
+  min-height: 42px;
+}
+
+.telegram-login__hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.telegram-login__error {
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px;
+  background: var(--brand-danger-soft);
+  color: var(--brand-danger);
+  font-size: 0.85rem;
+}
+

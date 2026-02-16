@@ -1,0 +1,24 @@
+.admin-unauthorized {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.admin-unauthorized__card {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  border-radius: 18px;
+  padding: 2rem;
+  text-align: center;
+  max-width: 420px;
+}
+
+.admin-unauthorized__card h2 {
+  margin: 0 0 0.5rem;
+}
+
+.admin-unauthorized__card p {
+  margin: 0;
+  color: var(--text-muted);
+}

@@ -1,0 +1,389 @@
+<section class="profile">
+  @if (isLoading) {
+    <div class="profile__loading">{{ 'profile.loading' | transloco }}</div>
+  } @else {
+    @if (!isEditing) {
+      <div class="profile__stack">
+        <div class="profile__card profile__card--header">
+          <div class="profile__header">
+            @if (profile?.avatar_url) {
+              <img class="profile__avatar" [src]="profile?.avatar_url ?? ''" alt="avatar" />
+            }
+            <div>
+              <div class="profile__name">{{ profile?.first_name }} {{ profile?.last_name }}</div>
+              <div class="profile__email">{{ profile?.email }}</div>
+              @if (profile?.social_providers?.length) {
+                <div class="profile__social">
+                  @for (provider of profile?.social_providers ?? []; track provider) {
+                    @if (provider === 'telegram') {
+                      <span class="profile__social-icon profile__social-icon--telegram" title="Telegram">
+                        <i class="pi pi-telegram"></i>
+                      </span>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="profile__card">
+          <div class="profile__section-title">{{ 'profile.title' | transloco }}</div>
+          <div class="profile__grid">
+            @if (profile?.username) {
+              <div class="profile__row">
+                <span class="profile__label">{{ 'profile.username' | transloco }}</span>
+                <span class="profile__value">{{ profile?.username }}</span>
+              </div>
+            }
+            @if (profile?.first_name) {
+              <div class="profile__row">
+                <span class="profile__label">{{ 'profile.first_name' | transloco }}</span>
+                <span class="profile__value">{{ profile?.first_name }}</span>
+              </div>
+            }
+            @if (profile?.last_name) {
+              <div class="profile__row">
+                <span class="profile__label">{{ 'profile.last_name' | transloco }}</span>
+                <span class="profile__value">{{ profile?.last_name }}</span>
+              </div>
+            }
+            @if (profile?.email) {
+              <div class="profile__row">
+                <span class="profile__label">{{ 'profile.email' | transloco }}</span>
+                <span class="profile__value">{{ profile?.email }}</span>
+              </div>
+            }
+            @if (profile?.birth_date) {
+              <div class="profile__row">
+                <span class="profile__label">{{ 'profile.birth_date' | transloco }}</span>
+                <span class="profile__value">{{ formatBirthDate(profile?.birth_date) }}</span>
+              </div>
+            }
+            @if (profile?.id_number) {
+              <div class="profile__row">
+                <span class="profile__label">{{ 'profile.id_number' | transloco }}</span>
+                <span class="profile__value">{{ formatIdNumber(profile?.id_number) }}</span>
+              </div>
+            }
+            @if (profile?.iban) {
+              <div class="profile__row">
+                <span class="profile__label">{{ 'profile.iban' | transloco }}</span>
+                <span class="profile__value">{{ profile?.iban }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        @if ((profile?.phone_numbers?.length ?? 0) > 0) {
+          <div class="profile__card">
+            <div class="profile__section-title">{{ 'profile.phone_numbers' | transloco }}</div>
+            <div class="profile__list">
+              @for (phone of profile?.phone_numbers ?? []; track phone.number) {
+                <div class="profile__list-item">
+                  <span class="profile__value">{{ phone.number }}</span>
+                  @if (phone.type) {
+                    @if (getTypeKey(phone.type)) {
+                      <span class="profile__muted">({{ getTypeKey(phone.type) | transloco }})</span>
+                    } @else {
+                      <span class="profile__muted">({{ phone.type }})</span>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if ((profile?.addresses?.length ?? 0) > 0) {
+          <div class="profile__card">
+            <div class="profile__section-title">{{ 'profile.addresses' | transloco }}</div>
+            <div class="profile__list">
+              @for (address of profile?.addresses ?? []; track address.address) {
+                <div class="profile__list-item">
+                  <span class="profile__value">{{ address.address }}</span>
+                  @if (address.type) {
+                    @if (getTypeKey(address.type)) {
+                      <span class="profile__muted">({{ getTypeKey(address.type) | transloco }})</span>
+                    } @else {
+                      <span class="profile__muted">({{ address.type }})</span>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="profile__actions">
+          <button class="profile__button profile__button--primary" type="button" (click)="startEdit()">
+            {{ 'profile.edit' | transloco }}
+          </button>
+          @if (!isAdminView) {
+            <button class="profile__button profile__button--change_pass" type="button" (click)="openPasswordModal()">
+              {{ 'profile.change_password' | transloco }}
+            </button>
+          }
+          @if (isAdminView) {
+            <button class="profile__button profile__button--ghost" type="button" (click)="backToUsers()">
+              {{ 'profile.back_to_users' | transloco }}
+            </button>
+          }
+        </div>
+      </div>
+    } @else {
+      <form class="profile__form" [formGroup]="form" (ngSubmit)="save()">
+        <div class="profile__card">
+          <div class="profile__section-title">{{ 'profile.avatar' | transloco }}</div>
+          <div class="profile__avatar-edit">
+            <div class="profile__avatar-preview">
+              @if (avatarPreview) {
+                <img class="profile__avatar" [src]="avatarPreview" alt="avatar" />
+              } @else {
+                <div class="profile__avatar-fallback">{{ getAvatarInitials() }}</div>
+              }
+            </div>
+            <div class="profile__avatar-tools">
+              <div
+                class="profile__avatar-drop"
+                [class.profile__avatar-drop--active]="isDraggingAvatar"
+                (dragover)="onAvatarDragOver($event)"
+                (dragleave)="onAvatarDragLeave($event)"
+                (drop)="onAvatarDrop($event)"
+              >
+                <input
+                  #avatarInput
+                  id="avatarInput"
+                  class="profile__avatar-input"
+                  type="file"
+                  accept="image/*"
+                  (change)="onAvatarSelected($event)"
+                />
+                <div class="profile__avatar-drop-content">
+                  <i class="pi pi-cloud-upload"></i>
+                  <div class="profile__avatar-drop-text">{{ 'profile.avatar_drag' | transloco }}</div>
+                </div>
+                <div class="profile__avatar-actions">
+                  <button class="profile__button profile__button--ghost" type="button" (click)="avatarInput.click()">
+                    {{ 'profile.avatar_upload' | transloco }}
+                  </button>
+                  <button class="profile__button profile__button--ghost" type="button" (click)="clearAvatar()">
+                    {{ 'profile.avatar_remove' | transloco }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile__card">
+          <div class="profile__section-title">{{ 'profile.title' | transloco }}</div>
+          <div class="profile__grid">
+            <label class="profile__field">
+              <span>{{ 'profile.username' | transloco }}</span>
+              <input class="profile__input" type="text" formControlName="username" (input)="onFieldInput('username')" />
+            </label>
+            <label class="profile__field">
+              <span>{{ 'profile.first_name' | transloco }}</span>
+              <input
+                class="profile__input"
+                type="text"
+                formControlName="first_name"
+                [class.profile__input--invalid]="isInvalid('first_name')"
+                (input)="onFieldInput('first_name')"
+              />
+              @if (getErrorKey('first_name')) {
+                <small class="profile__hint profile__hint--error">{{ getErrorKey('first_name') | transloco }}</small>
+              }
+            </label>
+            <label class="profile__field">
+              <span>{{ 'profile.last_name' | transloco }}</span>
+              <input
+                class="profile__input"
+                type="text"
+                formControlName="last_name"
+                [class.profile__input--invalid]="isInvalid('last_name')"
+                (input)="onFieldInput('last_name')"
+              />
+              @if (getErrorKey('last_name')) {
+                <small class="profile__hint profile__hint--error">{{ getErrorKey('last_name') | transloco }}</small>
+              }
+            </label>
+            <label class="profile__field">
+              <span>{{ 'profile.email' | transloco }}</span>
+              <input
+                class="profile__input"
+                type="email"
+                formControlName="email"
+                [class.profile__input--invalid]="isInvalid('email')"
+                (input)="onFieldInput('email')"
+              />
+              @if (getErrorKey('email')) {
+                <small class="profile__hint profile__hint--error">{{ getErrorKey('email') | transloco }}</small>
+              }
+            </label>
+            <div class="profile__field">
+              <label for="birth_date">{{ 'profile.birth_date' | transloco }}</label>
+              @if ((currentLang$ | async) === 'fa') {
+                <app-jalali-datepicker
+                  inputId="birth_date"
+                  formControlName="birth_date"
+                  [invalid]="isInvalid('birth_date')"
+                ></app-jalali-datepicker>
+              } @else {
+                <p-datepicker
+                  inputId="birth_date"
+                  formControlName="birth_date"
+                  [showIcon]="true"
+                  [showOnFocus]="true"
+                  [showClear]="true"
+                  [defaultDate]="defaultBirthDate"
+                  [dataType]="'string'"
+                  dateFormat="yy-mm-dd"
+                ></p-datepicker>
+              }
+              @if (getErrorKey('birth_date')) {
+                <small class="profile__hint profile__hint--error">{{ getErrorKey('birth_date') | transloco }}</small>
+              }
+            </div>
+            <label class="profile__field">
+              <span>{{ 'profile.id_number' | transloco }}</span>
+              <input
+                class="profile__input"
+                type="text"
+                formControlName="id_number"
+                [class.profile__input--invalid]="isInvalid('id_number')"
+                (input)="onFieldInput('id_number')"
+              />
+              @if (getErrorKey('id_number')) {
+                <small class="profile__hint profile__hint--error">{{ getErrorKey('id_number') | transloco }}</small>
+              }
+            </label>
+            <label class="profile__field">
+              <span>{{ 'profile.iban' | transloco }}</span>
+              <input
+                class="profile__input"
+                type="text"
+                formControlName="iban"
+                [class.profile__input--invalid]="isInvalid('iban')"
+                (input)="onFieldInput('iban')"
+              />
+              @if (getErrorKey('iban')) {
+                <small class="profile__hint profile__hint--error">{{ getErrorKey('iban') | transloco }}</small>
+              }
+            </label>
+          </div>
+        </div>
+
+        <div class="profile__card">
+          <div class="profile__section-title">{{ 'profile.phone_numbers' | transloco }}</div>
+          <div class="profile__stack" formArrayName="phone_numbers">
+            @for (phone of phoneNumbers.controls; track $index) {
+              <div class="profile__row profile__row--edit" [formGroupName]="$index">
+                <input class="profile__input" type="text" formControlName="number" />
+                <select class="profile__input" formControlName="type">
+                  <option value="private">{{ 'profile.type.private' | transloco }}</option>
+                  <option value="mobile">{{ 'profile.type.mobile' | transloco }}</option>
+                  <option value="business">{{ 'profile.type.business' | transloco }}</option>
+                </select>
+                <button class="profile__icon-button" type="button" (click)="removePhone($index)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            }
+            <button class="profile__button profile__button--ghost" type="button" (click)="addPhone()">
+              {{ 'profile.add_phone' | transloco }}
+            </button>
+          </div>
+        </div>
+
+        <div class="profile__card">
+          <div class="profile__section-title">{{ 'profile.addresses' | transloco }}</div>
+          <div class="profile__stack" formArrayName="addresses">
+            @for (address of addresses.controls; track $index) {
+              <div class="profile__row profile__row--edit" [formGroupName]="$index">
+                <input class="profile__input" type="text" formControlName="address" />
+                <select class="profile__input" formControlName="type">
+                  <option value="private">{{ 'profile.type.private' | transloco }}</option>
+                  <option value="business">{{ 'profile.type.business' | transloco }}</option>
+                </select>
+                <button class="profile__icon-button" type="button" (click)="removeAddress($index)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            }
+            <button class="profile__button profile__button--ghost" type="button" (click)="addAddress()">
+              {{ 'profile.add_address' | transloco }}
+            </button>
+          </div>
+        </div>
+
+        @if (errorMessage) {
+          <div class="profile__error">{{ errorMessage | transloco }}</div>
+        }
+
+        <div class="profile__actions m-4">
+          <button class="profile__button profile__button--primary" type="submit">
+            {{ 'profile.save' | transloco }}
+          </button>
+          <button class="profile__button profile__button--ghost" type="button" (click)="cancelEdit()">
+            {{ 'profile.cancel' | transloco }}
+          </button>
+        </div>
+      </form>
+    }
+  }
+</section>
+
+@if (showPasswordModal) {
+  <div class="profile-modal">
+    <div class="profile-modal__panel">
+      <div class="profile-modal__header">
+        <h3>{{ 'profile.password' | transloco }}</h3>
+        <button type="button" class="profile__button profile__button--ghost" (click)="closePasswordModal()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <form class="profile-modal__form" [formGroup]="passwordForm" (ngSubmit)="submitPasswordChange()">
+        <label class="profile__field">
+          <span>{{ 'profile.current_password' | transloco }}</span>
+          <input class="profile__input" type="password" formControlName="current_password" />
+          @if (getPasswordErrorKey('current_password')) {
+            <small class="profile__hint profile__hint--error">{{ getPasswordErrorKey('current_password') | transloco }}</small>
+          }
+        </label>
+        <label class="profile__field">
+          <span>{{ 'profile.new_password' | transloco }}</span>
+          <input class="profile__input" type="password" formControlName="new_password" />
+          @if (getPasswordErrorKey('new_password')) {
+            <small class="profile__hint profile__hint--error">{{ getPasswordErrorKey('new_password') | transloco }}</small>
+          }
+        </label>
+        <label class="profile__field">
+          <span>{{ 'profile.confirm_password' | transloco }}</span>
+          <input class="profile__input" type="password" formControlName="new_password_confirmation" />
+          @if (getPasswordErrorKey('new_password_confirmation')) {
+            <small class="profile__hint profile__hint--error">{{ getPasswordErrorKey('new_password_confirmation') | transloco }}</small>
+          }
+        </label>
+
+        @if (passwordErrorMessage) {
+          <div class="profile__error">{{ passwordErrorMessage | transloco }}</div>
+        }
+        @if (passwordSuccessMessage) {
+          <div class="profile__success">{{ passwordSuccessMessage | transloco }}</div>
+        }
+
+        <div class="profile__actions">
+          <button class="profile__button profile__button--primary" type="submit" [disabled]="isPasswordSubmitting">
+            {{ 'profile.password_submit' | transloco }}
+          </button>
+          <button class="profile__button profile__button--ghost" type="button" (click)="closePasswordModal()">
+            {{ 'profile.cancel' | transloco }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

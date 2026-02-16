@@ -1,0 +1,56 @@
+<section class="auth">
+  <div class="auth__card">
+    <div class="auth__title">{{ 'auth.login.title' | transloco }}</div>
+    <p class="auth__subtitle">{{ 'auth.login.subtitle' | transloco }}</p>
+
+    <form class="auth__form" [formGroup]="form" (ngSubmit)="submit()">
+      <label class="auth__field">
+        <span>{{ 'auth.login.login' | transloco }}</span>
+        <input
+          type="text"
+          class="auth__input"
+          formControlName="login"
+          autocomplete="username"
+          (input)="onFieldInput('login')"
+        />
+        @if (getFieldErrorKey('login')) {
+          <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('login') | transloco }}</small>
+        }
+      </label>
+
+      <label class="auth__field">
+        <span>{{ 'auth.login.password' | transloco }}</span>
+        <input
+          type="password"
+          class="auth__input"
+          formControlName="password"
+          autocomplete="current-password"
+          (input)="onFieldInput('password')"
+        />
+        @if (getFieldErrorKey('password')) {
+          <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('password') | transloco }}</small>
+        }
+      </label>
+
+      @if (errorMessage) {
+        <div class="auth__error">
+          {{ errorMessage | transloco }}
+        </div>
+      }
+
+      <button class="auth__submit" type="submit" [disabled]="isSubmitting">
+        {{ 'auth.login.submit' | transloco }}
+      </button>
+    </form>
+
+    <div class="auth__footer">
+      <span>{{ 'auth.login.no_account' | transloco }}</span>
+      <a routerLink="/register">{{ 'auth.login.register_link' | transloco }}</a>
+    </div>
+    <div class="auth__footer">
+      <a routerLink="/password/request">{{ 'auth.login.forgot' | transloco }}</a>
+    </div>
+
+    <app-telegram-login></app-telegram-login>
+  </div>
+</section>

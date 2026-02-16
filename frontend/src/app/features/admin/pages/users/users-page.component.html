@@ -1,0 +1,323 @@
+<section class="admin-page" [class.is-modal-open]="isFormOpen || deleteTarget || resetTarget">
+  <div class="admin-page__header">
+    <div>
+      <h2>{{ 'admin.users.title' | transloco }}</h2>
+      <p>{{ 'admin.users.subtitle' | transloco }}</p>
+    </div>
+    <button class="admin-page__primary" type="button" (click)="startCreate()">
+      {{ 'admin.users.create' | transloco }}
+    </button>
+  </div>
+
+
+  <div class="admin-page__card">
+    <div class="admin-toolbar">
+      <div class="admin-toolbar__search">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          class="admin-toolbar__input"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="setPage(1)"
+          placeholder="{{ 'admin.users.search' | transloco }}"
+        />
+      </div>
+      <div class="admin-toolbar__controls">
+        <button type="button" class="admin-toolbar__sort" (click)="setSort('username')">
+          {{ 'admin.users.username' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <button type="button" class="admin-toolbar__sort" (click)="setSort('name')">
+          {{ 'admin.users.name' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <button type="button" class="admin-toolbar__sort" (click)="setSort('email')">
+          {{ 'admin.users.email' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <button type="button" class="admin-toolbar__sort" (click)="setSort('roles')">
+          {{ 'admin.users.roles' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <select class="admin-toolbar__select" (change)="updatePageSize($any($event.target).value)">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+        </select>
+        <select
+          class="admin-toolbar__select"
+          [value]="verificationFilter"
+          (change)="setVerificationFilter($any($event.target).value)"
+        >
+          <option value="all">{{ 'admin.users.filters.all' | transloco }}</option>
+          <option value="unverified">{{ 'admin.users.filters.unverified' | transloco }}</option>
+          <option value="verified">{{ 'admin.users.filters.verified' | transloco }}</option>
+        </select>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="admin-page__loading">{{ 'admin.loading' | transloco }}</div>
+    } @else {
+      <div class="admin-table">
+        <div class="admin-table__header">
+          <span>{{ 'admin.users.username' | transloco }}</span>
+          <span>{{ 'admin.users.name' | transloco }}</span>
+          <span>{{ 'admin.users.email' | transloco }}</span>
+          <span>{{ 'admin.users.roles' | transloco }}</span>
+          <span></span>
+        </div>
+        @for (user of pagedUsers; track user.id) {
+          <div class="admin-table__row">
+            <span class="admin-table__user admin-table__cell" [attr.data-label]="'admin.users.username' | transloco">
+              <span>{{ user.username }}</span>
+              @if (user.social_providers?.includes('telegram')) {
+                <i class="pi pi-telegram admin-table__social" title="Telegram"></i>
+              }
+            </span>
+            <span class="admin-table__cell" [attr.data-label]="'admin.users.name' | transloco">
+              {{ user.first_name }} {{ user.last_name }}
+            </span>
+            <span class="admin-table__cell" [attr.data-label]="'admin.users.email' | transloco">{{ user.email ?? '-' }}</span>
+            <span class="admin-table__cell" [attr.data-label]="'admin.users.roles' | transloco">
+              @for (role of user.roles; track role.id) {
+                <span class="admin-table__pill">{{ roleLabel(role) }}</span>
+              }
+            </span>
+            <span class="admin-table__actions admin-table__cell" [attr.data-label]="'admin.actions.title' | transloco">
+              <button type="button" class="admin-page__ghost" (click)="goToProfile(user)" [title]="'profile.title' | transloco">
+                <i class="pi pi-user"></i>
+              </button>
+              <button type="button" class="admin-page__ghost" (click)="startEdit(user)">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button
+                type="button"
+                class="admin-page__ghost"
+                (click)="openResetEmail(user)"
+                [disabled]="!user.email"
+                [title]="'admin.users.reset_email' | transloco"
+              >
+                <i class="pi pi-envelope"></i>
+              </button>
+              <button
+                type="button"
+                class="admin-page__ghost"
+                (click)="openResetQr(user)"
+                [title]="'admin.users.reset_qr' | transloco"
+              >
+                <i class="pi pi-qrcode"></i>
+              </button>
+              <button type="button" class="admin-page__ghost admin-page__ghost--danger" (click)="confirmDelete(user)">
+                <i class="pi pi-trash"></i>
+              </button>
+            </span>
+          </div>
+        }
+      </div>
+
+      <div class="admin-pagination">
+        <button type="button" class="admin-page__ghost" (click)="setPage(page - 1)" [disabled]="page === 1">
+          <i class="pi" [class.pi-angle-left]="!isRtl()" [class.pi-angle-right]="isRtl()"></i>
+        </button>
+        <span>{{ formatPageNumber(page) }} / {{ formatPageNumber(totalPages) }}</span>
+        <button type="button" class="admin-page__ghost" (click)="setPage(page + 1)" [disabled]="page === totalPages">
+          <i class="pi" [class.pi-angle-right]="!isRtl()" [class.pi-angle-left]="isRtl()"></i>
+        </button>
+      </div>
+    }
+  </div>
+</section>
+
+@if (resetTarget) {
+  <div class="admin-modal">
+    <div class="admin-modal__panel">
+      <div class="admin-modal__header">
+        <h3>
+          {{ resetMode === 'qr' ? ('admin.users.reset_qr' | transloco) : ('admin.users.reset_email' | transloco) }}
+        </h3>
+        <button type="button" class="admin-page__ghost" (click)="closeResetModal()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <div class="admin-modal__body admin-modal__body--compact">
+        @if (isResetBusy) {
+          <div class="admin-page__loading">{{ 'admin.loading' | transloco }}</div>
+        } @else {
+          @if (resetErrorMessage) {
+            <div class="admin-modal__error">{{ resetErrorMessage | transloco }}</div>
+          }
+
+          @if (resetSuccessMessage) {
+            <div class="admin-modal__success">{{ resetSuccessMessage | transloco }}</div>
+          }
+
+          @if (resetMode === 'email') {
+            @if (resetEmailNeedsConfirm) {
+              <div class="admin-modal__warning">{{ 'admin.users.reset_email_confirm' | transloco }}</div>
+            }
+          }
+
+          @if (resetMode === 'qr') {
+            <div class="admin-reset__link">{{ resetLink }}</div>
+            @if (resetQrDataUrl) {
+              <div class="admin-reset__qr">
+                <img [src]="resetQrDataUrl" alt="QR" />
+              </div>
+            }
+          }
+        }
+      </div>
+
+      <div class="admin-form__actions">
+        @if (resetMode === 'email' && resetEmailNeedsConfirm) {
+          <button class="admin-page__primary" type="button" (click)="confirmSendResetEmail()" [disabled]="isResetBusy">
+            {{ 'admin.actions.send' | transloco }}
+          </button>
+        }
+        <button class="admin-page__ghost admin-page__ghost--cancel" type="button" (click)="closeResetModal()">
+          {{ 'admin.actions.close' | transloco }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (isFormOpen) {
+  <div class="admin-modal">
+    <div class="admin-modal__panel">
+      <div class="admin-modal__header">
+        <h3>{{ isEditing ? ('admin.users.edit' | transloco) : ('admin.users.create' | transloco) }}</h3>
+        <button type="button" class="admin-page__ghost" (click)="cancelEdit()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+      @if (formErrorMessage && !hasFieldErrors) {
+        <div class="admin-modal__error">{{ formErrorMessage | transloco }}</div>
+      }
+      <form class="admin-form" [formGroup]="form" (ngSubmit)="save()">
+        <div class="admin-form__grid">
+          <label class="admin-form__field">
+            <span>{{ 'admin.users.username' | transloco }}</span>
+            <div class="admin-form__username-row">
+              <input class="admin-form__input" type="text" formControlName="username" />
+              <button type="button" class="admin-page__ghost" (click)="generateUsername()">
+                {{ 'admin.users.username_generate' | transloco }}
+              </button>
+            </div>
+            @if (form.controls.username.touched && form.controls.username.hasError('required')) {
+              <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.required' | transloco }}</small>
+            }
+            @if (fieldErrors['username']) {
+              <small class="admin-form__hint admin-form__hint--error">{{ fieldErrors['username'] | transloco }}</small>
+            }
+          </label>
+          <label class="admin-form__field">
+            <span>{{ 'admin.users.first_name' | transloco }}</span>
+            <input class="admin-form__input" type="text" formControlName="first_name" />
+            @if (form.controls.first_name.touched && form.controls.first_name.hasError('required')) {
+              <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.required' | transloco }}</small>
+            }
+            @if (fieldErrors['first_name']) {
+              <small class="admin-form__hint admin-form__hint--error">{{ fieldErrors['first_name'] | transloco }}</small>
+            }
+          </label>
+          <label class="admin-form__field">
+            <span>{{ 'admin.users.last_name' | transloco }}</span>
+            <input class="admin-form__input" type="text" formControlName="last_name" />
+            @if (form.controls.last_name.touched && form.controls.last_name.hasError('required')) {
+              <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.required' | transloco }}</small>
+            }
+            @if (fieldErrors['last_name']) {
+              <small class="admin-form__hint admin-form__hint--error">{{ fieldErrors['last_name'] | transloco }}</small>
+            }
+          </label>
+          <label class="admin-form__field">
+            <span>{{ 'admin.users.email' | transloco }}</span>
+            <input class="admin-form__input" type="email" formControlName="email" />
+            @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+              <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.email_invalid' | transloco }}</small>
+            }
+            @if (fieldErrors['email']) {
+              <small class="admin-form__hint admin-form__hint--error">{{ fieldErrors['email'] | transloco }}</small>
+            }
+          </label>
+          <label class="admin-form__field">
+            <span>{{ 'admin.users.roles' | transloco }}</span>
+            <select class="admin-form__input" formControlName="role_ids" multiple>
+              @for (role of roles; track role.id) {
+                <option [value]="role.id">{{ roleLabel(role) }}</option>
+              }
+            </select>
+          </label>
+          @if (!isEditing || showPasswordForm) {
+            <label class="admin-form__field">
+              <span>{{ 'admin.users.password' | transloco }}</span>
+              <div class="admin-form__password-row">
+                <input class="admin-form__input" [type]="showPasswordText ? 'text' : 'password'" formControlName="password" />
+                <button type="button" class="admin-form__icon" (click)="togglePasswordVisibility()">
+                  <i class="pi" [class.pi-eye]="!showPasswordText" [class.pi-eye-slash]="showPasswordText"></i>
+                </button>
+                <button type="button" class="admin-page__ghost" (click)="generatePassword()">
+                  {{ 'admin.users.password_generate' | transloco }}
+                </button>
+              </div>
+              @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+                <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.required' | transloco }}</small>
+              }
+              @if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+                <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.password_policy' | transloco }}</small>
+              }
+              @if (form.controls.password.touched && form.controls.password.hasError('pattern')) {
+                <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.password_policy' | transloco }}</small>
+              }
+              @if (fieldErrors['password']) {
+                <small class="admin-form__hint admin-form__hint--error">{{ fieldErrors['password'] | transloco }}</small>
+              }
+            </label>
+          }
+        </div>
+
+        @if (isEditing) {
+          <button type="button" class="admin-form__toggle" (click)="togglePasswordForm()">
+            {{ showPasswordForm ? ('admin.users.password_cancel' | transloco) : ('admin.users.password_change' | transloco) }}
+          </button>
+        }
+
+        <div class="admin-form__actions">
+          <button class="admin-page__primary" type="submit">{{ 'admin.actions.save' | transloco }}</button>
+          <button class="admin-page__ghost admin-page__ghost--cancel" type="button" (click)="cancelEdit()">
+            {{ 'admin.actions.cancel' | transloco }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+
+@if (deleteTarget) {
+  <div class="admin-modal">
+    <div class="admin-modal__panel admin-modal__panel--confirm">
+      <div class="admin-modal__header">
+        <h3>{{ 'admin.users.delete_title' | transloco }}</h3>
+        <button type="button" class="admin-page__ghost" (click)="closeDelete()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+      @if (deleteErrorMessage) {
+        <div class="admin-modal__error">{{ deleteErrorMessage | transloco }}</div>
+      }
+      <p>{{ 'admin.users.delete_confirm' | transloco:{ name: deleteTarget.username } }}</p>
+      <div class="admin-form__actions">
+        <button class="admin-page__ghost admin-page__ghost--cancel" type="button" (click)="closeDelete()">
+          {{ 'admin.actions.cancel' | transloco }}
+        </button>
+        <button class="admin-page__ghost admin-page__ghost--danger" type="button" (click)="removeConfirmed()">
+          {{ 'admin.actions.delete' | transloco }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

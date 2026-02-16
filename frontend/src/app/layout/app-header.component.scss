@@ -1,0 +1,217 @@
+﻿@use '../../styles/breakpoints' as *;
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.75rem;
+  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.app-header__leading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+html[dir="rtl"] .app-header__leading {
+  flex-direction: row-reverse;
+}
+
+.app-header__menu-toggle {
+  border: none;
+  background: var(--accent);
+  color: var(--brand-on-primary);
+  padding: 0.45rem 0.65rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: none;
+}
+
+.app-header__menu-toggle i {
+  font-size: 1.55rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  font-weight: 400;
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-header__logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.app-header__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.app-header__subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.app-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-header__menu {
+  position: relative;
+}
+
+.app-header__menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 0;
+  width: 52px;
+  height: 52px;
+  justify-content: center;
+  background: var(--surface-soft);
+  font-size: 0.9rem;
+  color: var(--brand-blue-deep);
+  cursor: pointer;
+}
+
+.app-header__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--text-strong);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.app-header__avatar-image {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.app-header__menu-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  inset-inline-end: 0;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  padding: 0.75rem;
+  min-width: 200px;
+  z-index: 10;
+}
+
+.app-header__menu-section {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.app-header__menu-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.app-header__menu-list {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.app-header__menu-item {
+  border: none;
+  background: transparent;
+  text-align: start;
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.app-header__menu-item:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.app-header__menu-item--danger {
+  color: var(--brand-danger);
+}
+
+.app-header__menu-divider {
+  height: 1px;
+  background: color-mix(in srgb, var(--brand-muted) 30%, transparent);
+  margin: 0.75rem 0;
+}
+
+@media (max-width: $bp-md) {
+  .app-header {
+    align-items: center;
+    flex-wrap: nowrap;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--app-header-height);
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.1), 0 6px 20px rgba(16, 24, 40, 0.08);
+    z-index: 50;
+  }
+
+  .app-header__brand {
+    flex-direction: row;
+    gap: 0.6rem;
+  }
+
+  .app-header__menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app-header__menu-panel {
+    position: fixed;
+    top: 76px;
+    inset-inline: 1rem;
+    width: calc(100% - 2rem);
+    max-width: 360px;
+    margin-inline-start: auto;
+    margin-inline-end: 0;
+  }
+
+  .app-header__subtitle {
+    display: none;
+  }
+}
+

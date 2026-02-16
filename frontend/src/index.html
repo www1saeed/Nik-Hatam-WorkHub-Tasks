@@ -1,0 +1,31 @@
+﻿<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>Nik Hatam WorkHub</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c7fa3">
+  <meta name="msapplication-config" content="/browserconfig.xml">
+  <link id="app-manifest" rel="manifest" href="/site.en.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <script>
+    (function () {
+      var savedLocale = localStorage.getItem('nh_admin_locale');
+      var htmlLang = document.documentElement.lang || '';
+      var isFa = savedLocale === 'fa' || htmlLang.toLowerCase().indexOf('fa') === 0;
+      var manifest = document.getElementById('app-manifest');
+      if (manifest) {
+        manifest.setAttribute('href', isFa ? '/site.fa.webmanifest' : '/site.en.webmanifest');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+

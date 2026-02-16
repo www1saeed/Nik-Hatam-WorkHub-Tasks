@@ -1,0 +1,95 @@
+<div class="jalali-picker" [class.is-open]="isOpen" [class.is-disabled]="disabled">
+  <div class="jalali-picker__input">
+    <button type="button" class="jalali-picker__trigger" (click)="toggle()" [disabled]="disabled">
+      <i class="pi pi-calendar"></i>
+    </button>
+    <input
+      type="text"
+      [attr.id]="inputId"
+      [value]="displayValue"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [attr.aria-invalid]="invalid"
+      [class.jalali-picker__field--invalid]="invalid"
+      (focus)="open()"
+      (input)="onInput($event)"
+    />
+  </div>
+
+  @if (isOpen) {
+    <div class="jalali-picker__panel">
+      <div class="jalali-picker__header">
+        <button type="button" class="jalali-picker__nav" (click)="prevPage()">
+          <i class="pi pi-chevron-right"></i>
+        </button>
+
+        <div class="jalali-picker__title">
+          <button type="button" class="jalali-picker__title-btn" (click)="showMonthView()">
+            {{ monthNames[viewMonth - 1] }}
+          </button>
+          <button type="button" class="jalali-picker__title-btn" (click)="showYearView()">
+            {{ formatYear(viewYear) }}
+          </button>
+        </div>
+
+        <button type="button" class="jalali-picker__nav" (click)="nextPage()">
+          <i class="pi pi-chevron-left"></i>
+        </button>
+      </div>
+
+      @if (viewMode === 'date') {
+        <div class="jalali-picker__weekdays">
+          @for (day of weekDays; track day) {
+            <span>{{ day }}</span>
+          }
+        </div>
+
+        <div class="jalali-picker__grid">
+          @for (week of weeks; track $index) {
+            @for (day of week; track $index) {
+              <button
+                type="button"
+                class="jalali-picker__day"
+                [class.is-empty]="!day"
+                [class.is-selected]="isSelected(day)"
+                [class.is-today]="isToday(day)"
+                [disabled]="!day"
+                (click)="selectDay(day)"
+              >
+                @if (day) {
+                  <span>{{ formatDay(day) }}</span>
+                }
+              </button>
+            }
+          }
+        </div>
+      } @else if (viewMode === 'month') {
+        <div class="jalali-picker__month-grid">
+          @for (month of monthsGrid; track $index) {
+            <button
+              type="button"
+              class="jalali-picker__month"
+              [class.is-selected]="isSelectedMonth($index)"
+              (click)="selectMonth($index)"
+            >
+              {{ month }}
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="jalali-picker__year-grid">
+          @for (year of yearGrid(); track year) {
+            <button
+              type="button"
+              class="jalali-picker__year"
+              [class.is-selected]="isSelectedYear(year)"
+              (click)="selectYear(year)"
+            >
+              {{ formatYear(year) }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

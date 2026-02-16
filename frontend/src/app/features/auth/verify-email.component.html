@@ -1,0 +1,60 @@
+<section class="auth">
+  <div class="auth__card">
+    <div class="auth__title">{{ 'auth.verify_email.title' | transloco }}</div>
+    <p class="auth__subtitle">{{ 'auth.verify_email.subtitle' | transloco }}</p>
+
+    <form class="auth__form" [formGroup]="form" (ngSubmit)="submit()">
+      <label class="auth__field">
+        <span>{{ 'auth.verify_email.email' | transloco }}</span>
+        <input
+          type="email"
+          class="auth__input"
+          formControlName="email"
+          autocomplete="email"
+          (input)="onFieldInput('email')"
+        />
+        @if (getFieldErrorKey('email')) {
+          <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('email') | transloco }}</small>
+        }
+      </label>
+
+      <label class="auth__field">
+        <span>{{ 'auth.verify_email.code' | transloco }}</span>
+        <input
+          type="text"
+          class="auth__input"
+          formControlName="code"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          (input)="onFieldInput('code')"
+        />
+        @if (getFieldErrorKey('code')) {
+          <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('code') | transloco }}</small>
+        }
+      </label>
+
+      @if (errorMessage) {
+        <div class="auth__error">
+          {{ errorMessage | transloco }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="auth__success">
+          {{ successMessage | transloco }}
+        </div>
+      }
+
+      <button class="auth__submit" type="submit" [disabled]="isSubmitting">
+        {{ 'auth.verify_email.submit' | transloco }}
+      </button>
+    </form>
+
+    <div class="auth__actions">
+      <button class="auth__link" type="button" (click)="resend()" [disabled]="isResending">
+        {{ 'auth.verify_email.resend' | transloco }}
+      </button>
+      <a routerLink="/login">{{ 'auth.verify_email.back_login' | transloco }}</a>
+    </div>
+  </div>
+</section>

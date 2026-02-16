@@ -1,0 +1,136 @@
+<section class="auth">
+  <div class="auth__card">
+    <div class="auth__title">{{ 'auth.social.title' | transloco }}</div>
+    <p class="auth__subtitle">{{ 'auth.social.subtitle' | transloco }}</p>
+
+    <div class="auth__notice">
+      {{ 'auth.social.notice' | transloco }}
+    </div>
+
+    <div class="auth__tabs">
+      <button
+        type="button"
+        class="auth__tab"
+        [class.auth__tab--active]="mode === 'create'"
+        (click)="setMode('create')"
+      >
+        {{ 'auth.social.create' | transloco }}
+      </button>
+      <button
+        type="button"
+        class="auth__tab"
+        [class.auth__tab--active]="mode === 'merge'"
+        (click)="setMode('merge')"
+      >
+        {{ 'auth.social.merge' | transloco }}
+      </button>
+    </div>
+
+    <form class="auth__form" [formGroup]="form" (ngSubmit)="submit()">
+      @if (mode === 'create') {
+        <label class="auth__field">
+          <span>{{ 'auth.register.first_name' | transloco }}</span>
+          <input
+            type="text"
+            class="auth__input"
+            formControlName="first_name"
+            (input)="onFieldInput('first_name')"
+          />
+          @if (getFieldErrorKey('first_name')) {
+            <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('first_name') | transloco }}</small>
+          }
+        </label>
+
+        <label class="auth__field">
+          <span>{{ 'auth.register.last_name' | transloco }}</span>
+          <input
+            type="text"
+            class="auth__input"
+            formControlName="last_name"
+            (input)="onFieldInput('last_name')"
+          />
+          @if (getFieldErrorKey('last_name')) {
+            <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('last_name') | transloco }}</small>
+          }
+        </label>
+
+        <label class="auth__field">
+          <span>{{ 'auth.register.email' | transloco }}</span>
+          <input
+            type="email"
+            class="auth__input"
+            formControlName="email"
+            (input)="onFieldInput('email')"
+          />
+          <small class="auth__hint">{{ 'auth.social.email_optional' | transloco }}</small>
+          @if (getFieldErrorKey('email')) {
+            <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('email') | transloco }}</small>
+          }
+        </label>
+        <label class="auth__field">
+          <span>{{ 'auth.register.username' | transloco }}</span>
+          <input
+            type="text"
+            class="auth__input"
+            formControlName="username"
+            (input)="onFieldInput('username')"
+          />
+          @if (getFieldErrorKey('username')) {
+            <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('username') | transloco }}</small>
+          }
+        </label>
+        @if (getFieldErrorKey('email') === 'auth.errors.email_taken') {
+          <div class="auth__notice auth__notice--warning">
+            <div>{{ 'auth.social.email_exists_notice' | transloco: { email: (form.get('email')?.value ?? '') } }}</div>
+            <button class="auth__link" type="button" (click)="setMode('merge')">
+              {{ 'auth.social.switch_to_merge' | transloco }}
+            </button>
+          </div>
+        }
+      } @else {
+        <div class="auth__notice auth__notice--warning">
+          {{ 'auth.social.merge_notice' | transloco }}
+        </div>
+        <label class="auth__field">
+          <span>{{ 'auth.social.merge_login' | transloco }}</span>
+          <input
+            type="text"
+            class="auth__input"
+            formControlName="merge_login"
+            (input)="onFieldInput('merge_login')"
+          />
+          @if (getFieldErrorKey('merge_login')) {
+            <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('merge_login') | transloco }}</small>
+          }
+        </label>
+        <label class="auth__field">
+          <span>{{ 'auth.social.merge_password' | transloco }}</span>
+          <input
+            type="password"
+            class="auth__input"
+            formControlName="merge_password"
+            (input)="onFieldInput('merge_password')"
+          />
+          @if (getFieldErrorKey('merge_password')) {
+            <small class="auth__hint auth__hint--error">{{ getFieldErrorKey('merge_password') | transloco }}</small>
+          }
+        </label>
+      }
+
+      @if (errorMessage) {
+        <div class="auth__error">{{ errorMessage | transloco }}</div>
+      }
+      @if (successMessage) {
+        <div class="auth__success">{{ successMessage | transloco }}</div>
+      }
+
+      <button class="auth__submit" type="submit" [disabled]="isSubmitting">
+        {{ 'auth.social.submit' | transloco }}
+      </button>
+    </form>
+
+    <div class="auth__footer">
+      <a routerLink="/login">{{ 'auth.social.back_login' | transloco }}</a>
+    </div>
+  </div>
+</section>

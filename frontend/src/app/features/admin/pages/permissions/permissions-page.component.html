@@ -1,0 +1,154 @@
+<section class="admin-page" [class.is-modal-open]="isFormOpen || deleteTarget">
+  <div class="admin-page__header">
+    <div>
+      <h2>{{ 'admin.permissions.title' | transloco }}</h2>
+      <p>{{ 'admin.permissions.subtitle' | transloco }}</p>
+    </div>
+    <button class="admin-page__primary" type="button" (click)="startCreate()">
+      {{ 'admin.permissions.create' | transloco }}
+    </button>
+  </div>
+
+
+  <div class="admin-page__card">
+    <div class="admin-toolbar">
+      <div class="admin-toolbar__search">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          class="admin-toolbar__input"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="setPage(1)"
+          placeholder="{{ 'admin.permissions.search' | transloco }}"
+        />
+      </div>
+      <div class="admin-toolbar__controls">
+        <button type="button" class="admin-toolbar__sort" (click)="setSort('name')">
+          {{ 'admin.permissions.name' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <button type="button" class="admin-toolbar__sort" (click)="setSort('slug')">
+          {{ 'admin.permissions.slug' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <select class="admin-toolbar__select" (change)="updatePageSize($any($event.target).value)">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="admin-page__loading">{{ 'admin.loading' | transloco }}</div>
+    } @else {
+      <div class="admin-table admin-table--permissions">
+        <div class="admin-table__header">
+          <span>{{ 'admin.permissions.name' | transloco }}</span>
+          <span>{{ 'admin.permissions.slug' | transloco }}</span>
+          <span></span>
+        </div>
+        @for (permission of pagedPermissions; track permission.id) {
+          <div class="admin-table__row">
+            <span class="admin-table__cell" [attr.data-label]="'admin.permissions.name' | transloco">
+              {{ permission.name }}
+            </span>
+            <span class="admin-table__cell" [attr.data-label]="'admin.permissions.slug' | transloco">
+              {{ permission.slug }}
+            </span>
+            <span class="admin-table__actions admin-table__cell" [attr.data-label]="'admin.actions.title' | transloco">
+              <button type="button" class="admin-page__ghost" (click)="startEdit(permission)">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button type="button" class="admin-page__ghost admin-page__ghost--danger" (click)="confirmDelete(permission)">
+                <i class="pi pi-trash"></i>
+              </button>
+            </span>
+          </div>
+        }
+      </div>
+    <div class="admin-pagination">
+      <button type="button" class="admin-page__ghost" (click)="setPage(page - 1)" [disabled]="page === 1">
+        <i class="pi" [class.pi-angle-left]="!isRtl()" [class.pi-angle-right]="isRtl()"></i>
+      </button>
+      <span>{{ formatPageNumber(page) }} / {{ formatPageNumber(totalPages) }}</span>
+      <button type="button" class="admin-page__ghost" (click)="setPage(page + 1)" [disabled]="page === totalPages">
+        <i class="pi" [class.pi-angle-right]="!isRtl()" [class.pi-angle-left]="isRtl()"></i>
+      </button>
+    </div>
+    }
+  </div>
+</section>
+
+@if (isFormOpen) {
+  <div class="admin-modal">
+    <div class="admin-modal__panel">
+      <div class="admin-modal__header">
+        <h3>{{ isEditing ? ('admin.permissions.edit' | transloco) : ('admin.permissions.create' | transloco) }}</h3>
+        <button type="button" class="admin-page__ghost" (click)="cancelEdit()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+      @if (formErrorMessage && !hasFieldErrors) {
+        <div class="admin-modal__error">{{ formErrorMessage | transloco }}</div>
+      }
+      <form class="admin-form" [formGroup]="form" (ngSubmit)="save()">
+        <div class="admin-form__grid">
+          <label class="admin-form__field">
+            <span>{{ 'admin.permissions.name' | transloco }}</span>
+            <input class="admin-form__input" type="text" formControlName="name" />
+            @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+              <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.required' | transloco }}</small>
+            }
+            @if (fieldErrors['name']) {
+              <small class="admin-form__hint admin-form__hint--error">{{ fieldErrors['name'] | transloco }}</small>
+            }
+          </label>
+          <label class="admin-form__field">
+            <span>{{ 'admin.permissions.slug' | transloco }}</span>
+            <input class="admin-form__input" type="text" formControlName="slug" />
+            @if (form.controls.slug.touched && form.controls.slug.hasError('required')) {
+              <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.required' | transloco }}</small>
+            }
+            @if (fieldErrors['slug']) {
+              <small class="admin-form__hint admin-form__hint--error">{{ fieldErrors['slug'] | transloco }}</small>
+            }
+          </label>
+        </div>
+
+        <div class="admin-form__actions">
+          <button class="admin-page__primary" type="submit">{{ 'admin.actions.save' | transloco }}</button>
+          <button class="admin-page__ghost admin-page__ghost--cancel" type="button" (click)="cancelEdit()">
+            {{ 'admin.actions.cancel' | transloco }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+
+@if (deleteTarget) {
+  <div class="admin-modal">
+    <div class="admin-modal__panel admin-modal__panel--confirm">
+      <div class="admin-modal__header">
+        <h3>{{ 'admin.permissions.delete_title' | transloco }}</h3>
+        <button type="button" class="admin-page__ghost" (click)="closeDelete()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+      @if (deleteErrorMessage) {
+        <div class="admin-modal__error">{{ deleteErrorMessage | transloco }}</div>
+      }
+      <p>{{ 'admin.permissions.delete_confirm' | transloco:{ name: deleteTarget.name } }}</p>
+      <div class="admin-form__actions">
+        <button class="admin-page__ghost admin-page__ghost--cancel" type="button" (click)="closeDelete()">
+          {{ 'admin.actions.cancel' | transloco }}
+        </button>
+        <button class="admin-page__ghost admin-page__ghost--danger" type="button" (click)="removeConfirmed()">
+          {{ 'admin.actions.delete' | transloco }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

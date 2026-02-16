@@ -1,0 +1,46 @@
+<section class="home">
+  <div class="home__hero">
+    <div class="home__text">
+      <div class="home__eyebrow">{{ 'home.eyebrow' | transloco }}</div>
+      <h1 class="home__title">{{ 'home.title' | transloco }}</h1>
+      <p class="home__subtitle">{{ 'home.subtitle' | transloco }}</p>
+      <div class="home__actions">
+        @if (isAuthenticated$ | async) {
+          <a class="home__button home__button--solid" routerLink="/dashboard">
+            {{ 'home.open_dashboard' | transloco }}
+          </a>
+        } @else {
+          <a class="home__button home__button--solid" routerLink="/login">
+            {{ 'home.login_cta' | transloco }}
+          </a>
+          <a class="home__button home__button--ghost" routerLink="/register">
+            {{ 'home.register_cta' | transloco }}
+          </a>
+        }
+      </div>
+    </div>
+    <div class="home__card">
+      <div class="home__card-title">{{ 'home.card_title' | transloco }}</div>
+      <div class="home__card-list">
+        <div class="home__card-item">{{ 'home.card_item_1' | transloco }}</div>
+        <div class="home__card-item">{{ 'home.card_item_2' | transloco }}</div>
+        <div class="home__card-item">{{ 'home.card_item_3' | transloco }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home__metrics">
+    <div class="home__metric">
+      <div class="home__metric-value">24</div>
+      <div class="home__metric-label">{{ 'home.metric_users' | transloco }}</div>
+    </div>
+    <div class="home__metric">
+      <div class="home__metric-value">12</div>
+      <div class="home__metric-label">{{ 'home.metric_workflows' | transloco }}</div>
+    </div>
+    <div class="home__metric">
+      <div class="home__metric-value">6</div>
+      <div class="home__metric-label">{{ 'home.metric_channels' | transloco }}</div>
+    </div>
+  </div>
+</section>
