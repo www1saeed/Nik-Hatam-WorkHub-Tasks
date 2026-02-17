@@ -18,6 +18,27 @@ Route::prefix('auth')->group(function (): void {
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('auth/me', [\App\Http\Controllers\AuthController::class, 'me']);
+    Route::get('notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::get('notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount']);
+    Route::post('notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllRead']);
+    Route::post('notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markRead']);
+    Route::get('push-subscriptions/public-key', [\App\Http\Controllers\PushSubscriptionController::class, 'publicKey']);
+    Route::post('push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'store']);
+    Route::delete('push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy']);
+    Route::get('tasks/assignees', [\App\Http\Controllers\TaskController::class, 'assignees']);
+    Route::apiResource('tasks', \App\Http\Controllers\TaskController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+    Route::post('tasks/{task}/comments', [\App\Http\Controllers\TaskController::class, 'addComment']);
+    Route::delete('tasks/{task}/comments/{comment}', [\App\Http\Controllers\TaskController::class, 'destroyComment']);
+    Route::post('tasks/{task}/attachments', [\App\Http\Controllers\TaskPhotoController::class, 'store']);
+    Route::delete('tasks/{task}/attachments/{attachment}', [\App\Http\Controllers\TaskPhotoController::class, 'destroy']);
+    Route::get('photos/{attachment}/file', [\App\Http\Controllers\TaskPhotoController::class, 'file']);
+    Route::apiResource('photos', \App\Http\Controllers\PhotoAlbumController::class)
+        ->only(['index', 'show', 'update', 'destroy'])
+        ->parameters(['photos' => 'photo']);
+    Route::get('task-templates', [\App\Http\Controllers\TaskTemplateController::class, 'index']);
+    Route::post('task-templates', [\App\Http\Controllers\TaskTemplateController::class, 'store']);
+    Route::put('task-templates/{taskTemplate}', [\App\Http\Controllers\TaskTemplateController::class, 'update']);
+    Route::delete('task-templates/{taskTemplate}', [\App\Http\Controllers\TaskTemplateController::class, 'destroy']);
     Route::get('profile', [\App\Http\Controllers\ProfileController::class, 'show']);
     Route::post('profile', [\App\Http\Controllers\ProfileController::class, 'update']);
     Route::get('profile/availability', [\App\Http\Controllers\ProfileController::class, 'availability']);

@@ -17,6 +17,11 @@
   <div class="app-header__actions">
     <div class="app-header__menu">
       <button class="app-header__menu-trigger" type="button" (click)="toggleMenu()">
+        @if ((unreadNotifications$ | async); as unreadCount) {
+          @if (unreadCount > 0) {
+            <span class="app-header__notif-badge">{{ unreadBadgeLabel(unreadCount) }}</span>
+          }
+        }
         @if (isAuthenticated$ | async) {
           @if ((currentUser$ | async)?.avatar_url) {
             <img
@@ -35,19 +40,6 @@
       @if (isMenuOpen) {
         <div class="app-header__menu-panel">
           <div class="app-header__menu-list">
-            @for (theme of themes; track theme.value) {
-              @if (theme.value !== (currentTheme$ | async)) {
-                <button class="app-header__menu-item" type="button" (click)="setTheme(theme.value)">
-                  <i [class]="theme.icon"></i>
-                  <span>{{ theme.labelKey | transloco }}</span>
-                </button>
-              }
-            }
-          </div>
-
-          <div class="app-header__menu-divider"></div>
-
-          <div class="app-header__menu-list">
             @for (lang of languages; track lang.value) {
               @if (lang.value !== (currentLang$ | async)) {
                 <button class="app-header__menu-item" type="button" (click)="setLanguage(lang.value)">
@@ -60,7 +52,52 @@
 
           <div class="app-header__menu-divider"></div>
 
+          <div class="app-header__menu-list">
+            @if ((currentTheme$ | async) !== 'light') {
+              <button class="app-header__menu-item" type="button" (click)="setTheme('light')">
+                <i class="pi pi-sun"></i>
+                <span>{{ 'nav.theme_light' | transloco }}</span>
+              </button>
+            }
+            @if ((currentTheme$ | async) !== 'dark') {
+              <button class="app-header__menu-item" type="button" (click)="setTheme('dark')">
+                <i class="pi pi-moon"></i>
+                <span>{{ 'nav.theme_dark' | transloco }}</span>
+              </button>
+            }
+          </div>
+
+          <div class="app-header__menu-divider"></div>
+
           @if (isAuthenticated$ | async) {
+            <button class="app-header__menu-item" type="button" (click)="navigateTo('/dashboard/notifications')">
+              <i class="pi pi-bell"></i>
+              <span>{{ 'admin.notifications.menu_label' | transloco }}</span>
+              @if ((unreadNotifications$ | async); as unreadCount) {
+                @if (unreadCount > 0) {
+                  <small class="app-header__menu-badge">{{ unreadBadgeLabel(unreadCount) }}</small>
+                }
+              }
+            </button>
+            <div class="app-header__menu-notifications">
+              @if (isLoadingNotifications) {
+                <div class="app-header__menu-empty">{{ 'admin.loading' | transloco }}</div>
+              } @else if (unreadHeaderNotifications().length === 0) {
+                <div class="app-header__menu-empty">{{ 'admin.notifications.empty_short' | transloco }}</div>
+              } @else {
+                @for (item of unreadHeaderNotifications(); track item.id) {
+                  <button
+                    type="button"
+                    class="app-header__notif-item is-unread"
+                    (click)="openNotification(item)"
+                  >
+                    <span class="app-header__notif-text">{{ notificationMessage(item, (currentLang$ | async) ?? null) }}</span>
+                    <small class="app-header__notif-time">{{ notificationTime(item, (currentLang$ | async) ?? null) }}</small>
+                  </button>
+                }
+              }
+            </div>
+            <div class="app-header__menu-divider"></div>
             <button class="app-header__menu-item" type="button" (click)="navigateTo('/dashboard')">
               <i class="pi pi-th-large"></i>
               <span>{{ 'nav.dashboard' | transloco }}</span>

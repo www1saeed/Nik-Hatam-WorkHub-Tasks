@@ -21,6 +21,9 @@ pnpm-debug.log*
 node_modules/
 dist/
 coverage/
+npm-cache/
+.npm-cache/
+**/.npm-cache/
 
 # Laravel / PHP
 backend/vendor/

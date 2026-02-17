@@ -56,7 +56,6 @@
   font-size: 1rem;
   cursor: pointer;
   display: none;
-  color: var(--brand-text);
 }
 
 .is-ltr .dashboard-shell__collapse.is-collapsed i {
@@ -84,6 +83,10 @@
   opacity: 0;
   width: 0;
   pointer-events: none;
+  display: none;
+}
+
+.dashboard-shell.is-collapsed .dashboard-shell__group-toggle i {
   display: none;
 }
 
@@ -127,6 +130,33 @@
   gap: 0.35rem;
 }
 
+.dashboard-shell__group-toggle {
+  border: none;
+  background: transparent;
+  padding: 0.3rem 0.4rem;
+  border-radius: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: inherit;
+  cursor: pointer;
+}
+
+.dashboard-shell__group-toggle:hover {
+  background: var(--brand-blue-soft-light);
+}
+
+.dashboard-shell__group-toggle i {
+  color: var(--brand-muted);
+  transition: transform 0.18s ease;
+}
+
+.dashboard-shell__group-toggle i.is-collapsed {
+  transform: rotate(-90deg);
+}
+
 .dashboard-shell__group-title {
   font-size: 0.78rem;
   font-weight: 600;
@@ -134,6 +164,10 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0.35rem 0.4rem 0.25rem;
+}
+
+.dashboard-shell__group-toggle .dashboard-shell__group-title {
+  margin: 0;
 }
 
 .is-rtl .dashboard-shell__group-title {
@@ -155,6 +189,21 @@
 
 .dashboard-shell__nav a i {
   font-size: 1.2rem;
+}
+
+.dashboard-shell__badge {
+  margin-inline-start: auto;
+  min-width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-blue-deep) 82%, white);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0 0.3rem;
 }
 
 .dashboard-shell__nav a.is-active {

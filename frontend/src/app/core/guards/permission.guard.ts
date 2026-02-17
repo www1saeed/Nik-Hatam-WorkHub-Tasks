@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const permissionGuard = (permission: string): CanActivateFn => async (): Promise<boolean | UrlTree> => {
+export const permissionGuard = (permission: string | string[]): CanActivateFn => async (): Promise<boolean | UrlTree> => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -10,7 +10,8 @@ export const permissionGuard = (permission: string): CanActivateFn => async (): 
     await authService.refreshUser();
   }
 
-  if (authService.hasPermission(permission)) {
+  const permissions = Array.isArray(permission) ? permission : [permission];
+  if (permissions.some((candidate) => authService.hasPermission(candidate))) {
     return true;
   }
 

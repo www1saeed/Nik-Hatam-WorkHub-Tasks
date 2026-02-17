@@ -1,0 +1,52 @@
+@use '../../admin-shared';
+
+.admin-table__header,
+.admin-table__row {
+  grid-template-columns: 0.55fr 1fr 0.75fr 0.6fr 0.85fr 0.75fr;
+}
+
+.task-album__thumb-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--brand-blue-soft-light) 70%, white);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  color: var(--brand-muted);
+}
+
+.task-album__thumb-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.task-album__preview-panel {
+  max-width: min(980px, 98vw);
+}
+
+.task-album__preview-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.task-album__preview-image {
+  max-width: 100%;
+  max-height: min(76vh, 760px);
+  border-radius: 12px;
+}
+
+@media (max-width: 900px) {
+  .admin-table__header {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-table__row {
+    grid-template-columns: 1fr;
+  }
+}

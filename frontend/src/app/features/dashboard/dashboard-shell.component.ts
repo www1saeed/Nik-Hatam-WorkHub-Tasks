@@ -10,6 +10,8 @@ import { SIDEBAR_SECTIONS, SidebarSection } from './sidebar-menu.config';
 import { map, shareReplay } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BP_LG_PX, BP_MD_PX } from '../../core/config/layout.config';
+import { NotificationsService } from '../../core/services/notifications.service';
+import { DateUtils } from '../../core/utils/date-utils';
 
 @Component({
   selector: 'app-dashboard-shell',
@@ -19,12 +21,19 @@ import { BP_LG_PX, BP_MD_PX } from '../../core/config/layout.config';
   styleUrl: './dashboard-shell.component.scss'
 })
 export class DashboardShellComponent {
+  /**
+   * Local storage key for persisted sidebar-group collapse states.
+   * Value shape: `{ [groupKey: string]: boolean }` where `true` means collapsed.
+   */
+  private static readonly GROUP_COLLAPSE_STORAGE_KEY = 'dashboard.shell.group-collapsed.v1';
+
   private readonly authService = inject(AuthService);
   private readonly sidebarService = inject(SidebarService);
   private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly breakpoint = inject(BreakpointObserver);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly notificationsService = inject(NotificationsService);
   readonly currentUser$ = this.authService.currentUser$;
   readonly currentLang$ = this.languageService.current$;
   readonly isHandset$ = this.breakpoint.observe(`(max-width: ${BP_MD_PX}px)`).pipe(
@@ -40,10 +49,19 @@ export class DashboardShellComponent {
   isHandset = false;
   isCollapsed = false;
   isSidebarOpen = false;
+  /**
+   * Per-group collapse memory.
+   * Example keys: `general`, `workdesk`, `account`.
+   */
+  private groupCollapseState: Record<string, boolean> = {};
 
   readonly menuSections = SIDEBAR_SECTIONS;
+  readonly unreadNotifications$ = this.notificationsService.unreadCount$;
 
   constructor() {
+    // Restore persisted group states once during shell bootstrap.
+    this.groupCollapseState = this.readGroupCollapseState();
+
     this.isHandset$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((isHandset) => {
@@ -69,6 +87,12 @@ export class DashboardShellComponent {
           this.toggleSidebar();
         }
       });
+
+    // Keep sidebar badge synchronized with current unread counter.
+    // Header performs periodic refresh, while this shell just subscribes to state.
+    void this.notificationsService.refreshUnreadCount().catch(() => {
+      // Ignore initial unread refresh failures (offline/test backend unavailable).
+    });
   }
 
   toggleSidebar(): void {
@@ -92,6 +116,29 @@ export class DashboardShellComponent {
     this.isCollapsed = !this.isCollapsed;
   }
 
+  /**
+   * Toggle a single sidebar group and persist its new state.
+   */
+  toggleGroup(groupKey: string): void {
+    if (!groupKey) {
+      return;
+    }
+
+    const current = this.isGroupCollapsed(groupKey);
+    this.groupCollapseState = {
+      ...this.groupCollapseState,
+      [groupKey]: !current,
+    };
+    this.persistGroupCollapseState();
+  }
+
+  /**
+   * Return whether a sidebar group is currently collapsed.
+   */
+  isGroupCollapsed(groupKey: string): boolean {
+    return this.groupCollapseState[groupKey] === true;
+  }
+
   canAccess(user: AuthUser | null, permission: string): boolean {
     if (!user) {
       return false;
@@ -102,7 +149,22 @@ export class DashboardShellComponent {
     return (user.permissions ?? []).some((perm) => perm.slug === permission);
   }
 
-  isItemVisible(item: { permission?: string }, user: AuthUser | null): boolean {
+  hasAnyPermission(user: AuthUser | null, permissions: string[]): boolean {
+    if (!user) {
+      return false;
+    }
+    if ((user.roles ?? []).some((role) => role.slug === 'admin')) {
+      return true;
+    }
+    const current = new Set((user.permissions ?? []).map((perm) => perm.slug));
+    return permissions.some((permission) => current.has(permission));
+  }
+
+  isItemVisible(item: { permission?: string; permissionsAny?: string[] }, user: AuthUser | null): boolean {
+    if (item.permissionsAny && item.permissionsAny.length > 0) {
+      return this.hasAnyPermission(user, item.permissionsAny);
+    }
+
     if (!item.permission) {
       return true;
     }
@@ -116,5 +178,58 @@ export class DashboardShellComponent {
         items: section.items.filter((item) => this.isItemVisible(item, user))
       }))
       .filter((section) => section.items.length > 0);
+  }
+
+  /**
+   * Compact unread badge label for sidebar account entry.
+   */
+  unreadBadgeLabel(count: number | null | undefined): string {
+    const safe = Number(count ?? 0);
+    if (safe <= 0) {
+      return '';
+    }
+    const label = safe > 99 ? '99+' : String(safe);
+    return this.languageService.getLanguage() === 'fa'
+      ? DateUtils.toPersianDigits(label)
+      : label;
+  }
+
+  /**
+   * Safely load persisted group collapse states from local storage.
+   */
+  private readGroupCollapseState(): Record<string, boolean> {
+    try {
+      const raw = localStorage.getItem(DashboardShellComponent.GROUP_COLLAPSE_STORAGE_KEY);
+      if (!raw) {
+        return {};
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (!parsed || typeof parsed !== 'object') {
+        return {};
+      }
+
+      const normalized: Record<string, boolean> = {};
+      Object.entries(parsed as Record<string, unknown>).forEach(([key, value]) => {
+        normalized[key] = value === true;
+      });
+      return normalized;
+    } catch {
+      // Invalid JSON or unavailable storage should not break sidebar rendering.
+      return {};
+    }
+  }
+
+  /**
+   * Persist current group collapse states to local storage.
+   */
+  private persistGroupCollapseState(): void {
+    try {
+      localStorage.setItem(
+        DashboardShellComponent.GROUP_COLLAPSE_STORAGE_KEY,
+        JSON.stringify(this.groupCollapseState)
+      );
+    } catch {
+      // Ignore storage write failures (quota/privacy mode).
+    }
   }
 }

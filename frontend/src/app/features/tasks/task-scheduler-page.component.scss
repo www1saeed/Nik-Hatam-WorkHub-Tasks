@@ -1,0 +1,781 @@
+.task-scheduler {
+  display: grid;
+  gap: 1rem;
+}
+
+.task-scheduler__hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.task-scheduler__hero h2 {
+  margin: 0;
+}
+
+.task-scheduler__hero p {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+}
+
+.task-scheduler__controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.task-scheduler__ghost,
+.task-scheduler__view-btn,
+.task-scheduler__primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background: var(--card-bg);
+  color: var(--brand-text);
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.task-scheduler__view-btn.is-active,
+.task-scheduler__primary {
+  background: linear-gradient(135deg, var(--accent-secondary), var(--brand-primary-dark));
+  color: var(--brand-on-primary);
+  border-color: transparent;
+  box-shadow: 0 8px 18px rgba(3, 105, 161, 0.28);
+}
+
+.task-scheduler__ghost--danger {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: var(--brand-danger);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.task-scheduler__ghost.task-scheduler_gotoday {
+  background: color-mix(in srgb, #38bdf8 16%, var(--card-bg));
+}
+
+.task-scheduler__ghost:hover {
+  border-color: color-mix(in srgb, #0ea5e9 45%, transparent);
+  background: color-mix(in srgb, #38bdf8 16%, var(--card-bg));
+}
+
+.task-scheduler__primary:hover,
+.task-scheduler__view-btn.is-active:hover {
+  box-shadow: 0 10px 20px rgba(3, 105, 161, 0.35);
+}
+
+.task-scheduler__ghost--danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.task-scheduler__filter-panel {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 360px;
+}
+
+.task-scheduler__select {
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  padding: 0.55rem 0.65rem;
+  background: var(--card-bg);
+  color: var(--brand-text);
+  min-height: 42px;
+}
+
+.task-scheduler__range {
+  font-weight: 600;
+  color: var(--brand-blue-deep);
+}
+
+.task-scheduler__range-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.task-scheduler__range-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/*
+ * RTL icon correction:
+ * - In FA/RTL context, previous/next chevrons should visually flip.
+ * - We support both global html language switch and section-level `.is-rtl`.
+ */
+:host-context(html[lang='fa']) .pi-angle-left,
+:host-context(html[lang='fa']) .pi-angle-right {
+  transform: rotate(180deg);
+}
+
+.task-scheduler__error,
+.task-scheduler__success {
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+}
+
+.task-scheduler__error {
+  color: var(--brand-danger);
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.task-scheduler__success {
+  color: #166534;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.task-scheduler__sync-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 38%, transparent);
+  background: color-mix(in srgb, var(--brand-blue-soft-light) 58%, #ffffff 42%);
+}
+
+.task-scheduler__sync-banner-text {
+  color: var(--brand-blue-deep);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.task-scheduler__dead-letter-panel {
+  border-radius: 12px;
+  border: 1px dashed rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.08);
+  padding: 0.7rem 0.8rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.task-scheduler__dead-letter-head {
+  display: grid;
+  gap: 0.2rem;
+  color: #7f1d1d;
+}
+
+.task-scheduler__dead-letter-head strong {
+  font-size: 0.9rem;
+}
+
+.task-scheduler__dead-letter-head span {
+  font-size: 0.8rem;
+}
+
+.task-scheduler__dead-letter-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.task-scheduler__dead-letter-item {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 0.5rem 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.task-scheduler__dead-letter-meta {
+  min-width: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.task-scheduler__dead-letter-type {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #991b1b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+}
+
+.task-scheduler__dead-letter-task {
+  font-weight: 600;
+  color: var(--brand-text);
+}
+
+.task-scheduler__dead-letter-reason {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.task-scheduler__dead-letter-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.task-scheduler__card {
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.task-scheduler__loading {
+  color: var(--text-muted);
+}
+
+:host ::ng-deep .fc {
+  --fc-border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+  --fc-page-bg-color: var(--card-bg);
+  --fc-neutral-bg-color: rgba(77, 201, 244, 0.08);
+  --fc-today-bg-color: rgba(56, 189, 248, 0.2);
+}
+
+:host ::ng-deep .fc .fc-timegrid-slot {
+  height: 2.6rem;
+}
+
+:host ::ng-deep .fc .fc-timegrid-slot-label-cushion,
+:host ::ng-deep .fc .fc-event-time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* Event cards in scheduler intentionally hide time to maximize title readability. */
+:host ::ng-deep .fc .fc-event-time {
+  display: none !important;
+}
+
+:host ::ng-deep .fc .fc-timegrid-col.fc-day-today {
+  background: linear-gradient(
+    180deg,
+    rgba(56, 189, 248, 0.24),
+    rgba(56, 189, 248, 0.12) 45%,
+    rgba(14, 165, 233, 0.06) 100%
+  );
+  box-shadow: inset 0 0 0 2px rgba(14, 165, 233, 0.62);
+}
+
+/*
+ * Modernized event style system:
+ * - neutral shell with soft border/shadow
+ * - status-specific color accents
+ * - high-contrast title line
+ */
+:host ::ng-deep .fc .fc-timegrid-event.task-event {
+  border-radius: 12px;
+  border: 1px solid transparent;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+  backdrop-filter: blur(1px);
+  padding: 0;
+}
+
+:host ::ng-deep .fc .fc-timegrid-event.task-event .fc-event-main {
+  padding: 0.22rem 0.38rem;
+}
+
+:host ::ng-deep .fc .fc-timegrid-event.task-event--open {
+  background: linear-gradient(145deg, #0ea5e9, #0369a1);
+  border-color: rgba(14, 165, 233, 0.55);
+}
+
+:host ::ng-deep .fc .fc-timegrid-event.task-event--done {
+  background: linear-gradient(145deg, #22c55e, #166534);
+  border-color: rgba(34, 197, 94, 0.55);
+}
+
+:host ::ng-deep .fc .fc-timegrid-event.task-event--today {
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.8), 0 10px 20px rgba(14, 165, 233, 0.22);
+}
+
+:host ::ng-deep .fc .task-event__title {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.76rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.task-scheduler__modal-form {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.task-scheduler__label {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.task-scheduler__label--spaced {
+  margin-top: 0.65rem;
+}
+
+.task-scheduler__modal-form input,
+.task-dialog__composer textarea {
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  padding: 0.55rem 0.65rem;
+  background: var(--card-bg);
+  color: var(--brand-text);
+}
+
+.task-scheduler__time-input {
+  min-height: 48px;
+  width: 100%;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 0.2rem !important;
+  color: var(--brand-text);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.task-scheduler__time-input:focus {
+  outline: none;
+}
+
+.task-scheduler__datetime-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.task-scheduler__field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.task-scheduler__field-error {
+  color: var(--brand-danger);
+  font-size: 0.8rem;
+}
+
+.task-scheduler__done-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.2rem;
+}
+
+.task-scheduler__modal-actions,
+.task-dialog__actions {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+:host ::ng-deep .task-scheduler__assignees.p-multiselect {
+  width: 100%;
+  border-radius: 12px;
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+:host ::ng-deep .task-scheduler-dialog .p-dialog-content {
+  overflow: visible;
+}
+
+.task-dialog {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.task-dialog h3,
+.task-dialog h4 {
+  margin: 0;
+}
+
+.task-dialog__meta {
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.task-dialog__comments {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.task-dialog__attachments {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.task-dialog__attachment-actions {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.task-dialog__file-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.task-dialog__file-btn input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.task-dialog__camera-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.task-dialog__camera-video {
+  width: 100%;
+  max-height: min(62vh, 520px);
+  display: block;
+  object-fit: cover;
+}
+
+.task-dialog__attachment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.task-dialog__attachment-card {
+  position: relative;
+  border: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 10px;
+  padding: 0.35rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.task-dialog__attachment-thumb {
+  border: none;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-blue-soft-light) 65%, white);
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.task-dialog__attachment-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.task-dialog__attachment-fallback {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-muted);
+}
+
+.task-dialog__attachment-meta {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.task-dialog__attachment-meta strong,
+.task-dialog__attachment-meta small {
+  font-size: 0.72rem;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.task-dialog__attachment-meta small {
+  color: var(--brand-muted);
+}
+
+.task-dialog__form-attachment-list {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.task-dialog__form-attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-radius: 8px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 32%, transparent);
+  padding: 0.3rem 0.45rem;
+  font-size: 0.82rem;
+}
+
+.task-dialog__attachment-preview-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.task-dialog__attachment-preview {
+  max-width: 100%;
+  max-height: min(76vh, 740px);
+  border-radius: 12px;
+}
+
+.task-dialog__muted {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.task-dialog__comment {
+  position: relative;
+  border: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+}
+
+.task-dialog__system-line {
+  color: color-mix(in srgb, var(--text-muted) 75%, #ffffff 25%);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.task-dialog__comment-head {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  padding-inline-end: 2rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.task-dialog__sync-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.task-dialog__sync-badge--pending {
+  background: rgba(234, 179, 8, 0.18);
+  color: #854d0e;
+}
+
+.task-dialog__sync-badge--failed {
+  background: rgba(239, 68, 68, 0.16);
+  color: #b91c1c;
+}
+
+.task-dialog__sync-badge--task {
+  background: color-mix(in srgb, #38bdf8 22%, #ffffff 78%);
+  color: #0c4a6e;
+  font-size: 0.66rem;
+  width: fit-content;
+}
+
+.task-dialog__comment p {
+  margin: 0.35rem 0 0;
+}
+
+.task-dialog__comment-delete {
+  position: absolute;
+  top: 0.35rem;
+  inset-inline-end: 0.35rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--brand-danger);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.task-dialog__composer {
+  margin-top: 0.45rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.task-dialog__composer textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.task-dialog__comment-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, #0f766e 35%, transparent);
+  background: linear-gradient(135deg, #2dd4bf, #0f766e);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.task-dialog__comment-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/*
+ * Dark-mode tuning for scheduler dialogs:
+ * Keep the same semantic emphasis as light mode while removing bright white mixes.
+ * This covers sync/dead-letter cards, attachment thumbs, system lines and sync badges.
+ */
+html[data-theme='dark'] .task-scheduler__sync-banner {
+  background: color-mix(in srgb, var(--brand-blue-soft-light) 65%, var(--card-bg));
+}
+
+html[data-theme='dark'] .task-scheduler__dead-letter-item {
+  background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+}
+
+html[data-theme='dark'] .task-dialog__attachment-thumb {
+  background: color-mix(in srgb, var(--brand-blue-soft-strong) 55%, var(--card-bg));
+}
+
+html[data-theme='dark'] .task-dialog__system-line {
+  color: color-mix(in srgb, var(--text-muted) 88%, transparent);
+}
+
+html[data-theme='dark'] .task-dialog__sync-badge--task {
+  background: color-mix(in srgb, #38bdf8 30%, var(--card-bg));
+  color: #bae6fd;
+}
+
+@media (max-width: 900px) {
+  .task-scheduler__hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-scheduler__controls {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .task-scheduler__range-row {
+    align-items: stretch;
+  }
+
+  .task-scheduler__range-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .task-scheduler__ghost,
+  .task-scheduler__view-btn,
+  .task-scheduler__primary {
+    width: 100%;
+    min-height: 42px;
+  }
+
+  .task-scheduler__datetime-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .task-scheduler__time-input {
+    min-height: 50px;
+  }
+
+  .task-scheduler__card {
+    padding: 0.45rem;
+    overflow: hidden;
+  }
+
+  :host ::ng-deep .fc {
+    min-width: 0;
+    font-size: 0.88rem;
+  }
+
+  :host ::ng-deep .fc .fc-timegrid-slot {
+    height: 2.15rem;
+  }
+
+  :host ::ng-deep .fc .fc-timegrid-slot-label-cushion {
+    font-size: 0.74rem;
+    font-weight: 700;
+  }
+
+  :host ::ng-deep .fc .fc-col-header-cell-cushion {
+    font-size: 0.76rem;
+    padding-block: 0.32rem;
+    padding-inline: 0.2rem;
+  }
+
+  :host ::ng-deep .fc .fc-timegrid-axis {
+    width: 2.5rem;
+  }
+
+  :host ::ng-deep .fc .fc-timegrid-event.task-event .fc-event-main {
+    padding: 0.16rem 0.28rem;
+  }
+
+  :host ::ng-deep .fc .task-event__title {
+    font-size: 0.7rem;
+    line-height: 1.15;
+    -webkit-line-clamp: 2;
+  }
+
+  :host ::ng-deep .fc .fc-scroller {
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 640px) {
+  .task-scheduler__controls {
+    grid-template-columns: 1fr;
+  }
+
+  .task-scheduler__range-actions {
+    grid-template-columns: 1fr;
+  }
+
+  :host ::ng-deep .fc .fc-toolbar,
+  :host ::ng-deep .fc .fc-header-toolbar {
+    display: none;
+  }
+
+  :host ::ng-deep .fc .fc-timegrid-axis {
+    width: 2.25rem;
+  }
+
+  :host ::ng-deep .fc .fc-timegrid-slot-label-cushion {
+    font-size: 0.7rem;
+  }
+
+  :host ::ng-deep .fc .fc-col-header-cell-cushion {
+    font-size: 0.72rem;
+  }
+}

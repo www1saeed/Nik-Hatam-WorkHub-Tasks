@@ -25,35 +25,70 @@
         @for (section of getVisibleSections(user); track section.key) {
           <div class="dashboard-shell__group">
             @if (section.labelKey) {
-              <div class="dashboard-shell__group-title">{{ section.labelKey | transloco }}</div>
-            }
-            @for (item of section.items; track item.route) {
-              <a
-                [routerLink]="item.route"
-                routerLinkActive="is-active"
-                [routerLinkActiveOptions]="{ exact: true }"
-                (click)="closeSidebar()"
-                [attr.data-label]="item.labelKey | transloco"
+              <button
+                type="button"
+                class="dashboard-shell__group-toggle"
+                (click)="toggleGroup(section.key)"
+                [attr.aria-expanded]="!isGroupCollapsed(section.key)"
               >
-                <i class="{{ item.icon }}"></i>
-                <span>{{ item.labelKey | transloco }}</span>
-              </a>
+                <span class="dashboard-shell__group-title">{{ section.labelKey | transloco }}</span>
+                <i class="pi pi-angle-down" [class.is-collapsed]="isGroupCollapsed(section.key)"></i>
+              </button>
+            }
+            @if (!isGroupCollapsed(section.key)) {
+              @for (item of section.items; track item.route) {
+                <a
+                  [routerLink]="item.route"
+                  routerLinkActive="is-active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  (click)="closeSidebar()"
+                  [attr.data-label]="item.labelKey | transloco"
+                >
+                  <i class="{{ item.icon }}"></i>
+                  <span>{{ item.labelKey | transloco }}</span>
+                </a>
+              }
             }
           </div>
         }
         <div class="dashboard-shell__footer">
           <div class="dashboard-shell__group">
-            <div class="dashboard-shell__group-title">{{ 'admin.sidebar.groups.account' | transloco }}</div>
-            <a href="/profile" (click)="closeSidebar()"
-               [attr.data-label]="'nav.profile' | transloco">
-              <i class="pi pi-user"></i>
-              <span>{{ 'nav.profile' | transloco }}</span>
-            </a>
-            <a href="/" (click)="logout()"
-               [attr.data-label]="'nav.logout' | transloco">
-              <i class="pi pi-sign-out"></i>
-              <span>{{ 'nav.logout' | transloco }}</span>
-            </a>
+            <button
+              type="button"
+              class="dashboard-shell__group-toggle"
+              (click)="toggleGroup('account')"
+              [attr.aria-expanded]="!isGroupCollapsed('account')"
+            >
+              <span class="dashboard-shell__group-title">{{ 'admin.sidebar.groups.account' | transloco }}</span>
+              <i class="pi pi-angle-down" [class.is-collapsed]="isGroupCollapsed('account')"></i>
+            </button>
+            @if (!isGroupCollapsed('account')) {
+              <a href="/profile" (click)="closeSidebar()"
+                 [attr.data-label]="'nav.profile' | transloco">
+                <i class="pi pi-user"></i>
+                <span>{{ 'nav.profile' | transloco }}</span>
+              </a>
+              <a
+                routerLink="/dashboard/notifications"
+                routerLinkActive="is-active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="closeSidebar()"
+                [attr.data-label]="'admin.notifications.menu_label' | transloco"
+              >
+                <i class="pi pi-bell"></i>
+                <span>{{ 'admin.notifications.menu_label' | transloco }}</span>
+                @if ((unreadNotifications$ | async); as unreadCount) {
+                  @if (unreadCount > 0) {
+                    <small class="dashboard-shell__badge">{{ unreadBadgeLabel(unreadCount) }}</small>
+                  }
+                }
+              </a>
+              <a href="/" (click)="logout()"
+                 [attr.data-label]="'nav.logout' | transloco">
+                <i class="pi pi-sign-out"></i>
+                <span>{{ 'nav.logout' | transloco }}</span>
+              </a>
+            }
           </div>
         </div>
       </nav>

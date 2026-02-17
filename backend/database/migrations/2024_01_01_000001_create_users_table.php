@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->string('iban')->nullable();
             $table->string('avatar_path')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password')->nullable();;
+            $table->string('password')->nullable();
             $table->string('admin_locale')->default('fa');
             $table->rememberToken();
             $table->timestamps();

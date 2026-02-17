@@ -1,0 +1,198 @@
+<section class="admin-page" [class.is-modal-open]="isFormOpen || deleteTarget || isPreviewOpen">
+  <div class="admin-page__header">
+    <div>
+      <h2>{{ 'admin.task_album.title' | transloco }}</h2>
+      <p>{{ 'admin.task_album.subtitle' | transloco }}</p>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="admin-page__error">{{ errorMessage | transloco }}</div>
+  }
+
+  <div class="admin-page__card">
+    <div class="admin-toolbar">
+      <div class="admin-toolbar__search">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          class="admin-toolbar__input"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applySearch()"
+          [placeholder]="'admin.task_album.search' | transloco"
+        />
+      </div>
+      <div class="admin-toolbar__controls">
+        <select class="admin-toolbar__select" [ngModel]="selectedAlbumKey" (ngModelChange)="applyAlbumFilter($event)">
+          <option value="">{{ 'admin.task_album.filter_all_album_keys' | transloco }}</option>
+          @for (key of availableAlbumKeys; track key) {
+            <option [value]="key">{{ key }}</option>
+          }
+        </select>
+        <button type="button" class="admin-toolbar__sort" (click)="toggleSortBy('created_at')">
+          {{ 'admin.task_album.columns.created_at' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <button type="button" class="admin-toolbar__sort" (click)="toggleSortBy('title')">
+          {{ 'admin.task_album.columns.title' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <button type="button" class="admin-toolbar__sort" (click)="toggleSortBy('size_bytes')">
+          {{ 'admin.task_album.columns.size' | transloco }}
+          <i class="pi" [class.pi-sort-amount-up-alt]="sortDir === 'asc'" [class.pi-sort-amount-down]="sortDir === 'desc'"></i>
+        </button>
+        <select class="admin-toolbar__select" (change)="updatePageSize($any($event.target).value)">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="admin-page__loading">{{ 'admin.loading' | transloco }}</div>
+    } @else {
+      <div class="admin-table admin-table--task-album">
+        <div class="admin-table__header">
+          <span>{{ 'admin.task_album.columns.preview' | transloco }}</span>
+          <span>{{ 'admin.task_album.columns.title' | transloco }}</span>
+          <span>{{ 'admin.task_album.columns.album_key' | transloco }}</span>
+          <span>{{ 'admin.task_album.columns.size' | transloco }}</span>
+          <span>{{ 'admin.task_album.columns.created_at' | transloco }}</span>
+          <span></span>
+        </div>
+        @for (item of pagedAttachments; track item.id) {
+          <div class="admin-table__row">
+            <span class="admin-table__cell" [attr.data-label]="'admin.task_album.columns.preview' | transloco">
+              <button type="button" class="task-album__thumb-btn" (click)="openPreview(item)">
+                @if (thumbUrl(item.id); as thumb) {
+                  <img [src]="thumb" [alt]="item.title" />
+                } @else {
+                  <i class="pi pi-image"></i>
+                }
+              </button>
+            </span>
+            <span class="admin-table__cell" [attr.data-label]="'admin.task_album.columns.title' | transloco">
+              {{ item.title }}
+            </span>
+            <span class="admin-table__cell" [attr.data-label]="'admin.task_album.columns.album_key' | transloco">
+              {{ item.album_key }}
+            </span>
+            <span class="admin-table__cell" [attr.data-label]="'admin.task_album.columns.size' | transloco">
+              {{ formatFileSize(item.size_bytes) }}
+            </span>
+            <span class="admin-table__cell" [attr.data-label]="'admin.task_album.columns.created_at' | transloco">
+              {{ formatDate(item.created_at) }}
+            </span>
+            <span class="admin-table__actions admin-table__cell" [attr.data-label]="'admin.actions.title' | transloco">
+              <button type="button" class="admin-page__ghost" (click)="startEdit(item)">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button
+                type="button"
+                class="admin-page__ghost"
+                (click)="openReference(item)"
+                [disabled]="!canOpenReference(item)"
+                [attr.aria-label]="'admin.task_album.open_reference' | transloco"
+              >
+                <i class="pi pi-external-link"></i>
+              </button>
+              <button type="button" class="admin-page__ghost admin-page__ghost--danger" (click)="confirmDelete(item)">
+                <i class="pi pi-trash"></i>
+              </button>
+            </span>
+          </div>
+        }
+      </div>
+      <div class="admin-pagination">
+        <button type="button" class="admin-page__ghost" (click)="setPage(page - 1)" [disabled]="page === 1">
+          <i class="pi" [class.pi-angle-left]="!isRtl()" [class.pi-angle-right]="isRtl()"></i>
+        </button>
+        <span>{{ formatPageNumber(page) }} / {{ formatPageNumber(totalPages) }}</span>
+        <button type="button" class="admin-page__ghost" (click)="setPage(page + 1)" [disabled]="page === totalPages">
+          <i class="pi" [class.pi-angle-right]="!isRtl()" [class.pi-angle-left]="isRtl()"></i>
+        </button>
+      </div>
+    }
+  </div>
+</section>
+
+@if (isFormOpen) {
+  <div class="admin-modal">
+    <div class="admin-modal__panel">
+      <div class="admin-modal__header">
+        <h3>{{ 'admin.task_album.edit' | transloco }}</h3>
+        <button type="button" class="admin-page__ghost" (click)="cancelEdit()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+      @if (formErrorMessage && !hasFieldErrors) {
+        <div class="admin-modal__error">{{ formErrorMessage | transloco }}</div>
+      }
+      <form class="admin-form" [formGroup]="form" (ngSubmit)="save()">
+        <div class="admin-form__grid">
+          <label class="admin-form__field">
+            <span>{{ 'admin.task_album.columns.title' | transloco }}</span>
+            <input class="admin-form__input" type="text" formControlName="title" />
+            @if (form.controls.title.touched && form.controls.title.hasError('required')) {
+              <small class="admin-form__hint admin-form__hint--error">{{ 'auth.errors.required' | transloco }}</small>
+            }
+            @if (fieldErrors['title']) {
+              <small class="admin-form__hint admin-form__hint--error">{{ fieldErrors['title'] | transloco }}</small>
+            }
+          </label>
+        </div>
+        <div class="admin-form__actions">
+          <button class="admin-page__primary" type="submit">{{ 'admin.actions.save' | transloco }}</button>
+          <button class="admin-page__ghost admin-page__ghost--cancel" type="button" (click)="cancelEdit()">
+            {{ 'admin.actions.cancel' | transloco }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (deleteTarget) {
+  <div class="admin-modal">
+    <div class="admin-modal__panel admin-modal__panel--confirm">
+      <div class="admin-modal__header">
+        <h3>{{ 'admin.task_album.delete_title' | transloco }}</h3>
+        <button type="button" class="admin-page__ghost" (click)="closeDelete()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+      @if (deleteErrorMessage) {
+        <div class="admin-modal__error">{{ deleteErrorMessage | transloco }}</div>
+      }
+      <p>{{ 'admin.task_album.delete_confirm' | transloco:{ title: deleteTarget.title } }}</p>
+      <div class="admin-modal__warning">{{ 'admin.task_album.delete_warning' | transloco }}</div>
+      <div class="admin-form__actions">
+        <button class="admin-page__ghost admin-page__ghost--cancel" type="button" (click)="closeDelete()">
+          {{ 'admin.actions.cancel' | transloco }}
+        </button>
+        <button class="admin-page__ghost admin-page__ghost--danger" type="button" (click)="removeConfirmed()">
+          {{ 'admin.actions.delete' | transloco }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (isPreviewOpen) {
+  <div class="admin-modal">
+    <div class="admin-modal__panel task-album__preview-panel">
+      <div class="admin-modal__header">
+        <h3>{{ previewTitle }}</h3>
+        <button type="button" class="admin-page__ghost" (click)="closePreview()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+      @if (previewUrl) {
+        <div class="task-album__preview-wrap">
+          <img class="task-album__preview-image" [src]="previewUrl" [alt]="previewTitle" />
+        </div>
+      }
+    </div>
+  </div>
+}

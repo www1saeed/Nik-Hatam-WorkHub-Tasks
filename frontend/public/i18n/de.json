@@ -135,7 +135,21 @@
   },
   "dashboard": {
     "title": "Workspace",
-    "subtitle": "Die zentralen Verwaltungsmodule erscheinen hier in Kürze."
+    "subtitle": "Die zentralen Verwaltungsmodule erscheinen hier in Kürze.",
+    "my_open_tasks_title": "Meine offenen Tagesaufgaben",
+    "my_open_tasks_subtitle": "Deine zuletzt offenen, nicht erledigten Eintraege.",
+    "my_open_tasks_empty": "Keine offenen Aufgaben gefunden.",
+    "create_task_cta": "Neue Aufgabe erstellen",
+    "my_tasks_total_label": "Meine Aufgaben gesamt",
+    "latest_users_title": "Zuletzt registrierte Benutzer",
+    "latest_users_subtitle": "Letzte 10 Registrierungen mit Schnelllink zum Profil.",
+    "latest_users_empty": "Keine Benutzer gefunden.",
+    "users_total_label": "Benutzer gesamt",
+    "today_done_tasks_title": "Heute erledigte Aufgaben",
+    "today_done_tasks_subtitle": "Zuletzt erledigte Aufgaben von heute.",
+    "today_done_tasks_empty": "Keine erledigten Aufgaben fuer heute.",
+    "open_tasks_link": "Aufgaben oeffnen",
+    "open_profile_link": "Profil oeffnen"
   },
   "admin": {
     "sidebar": {
@@ -143,12 +157,18 @@
       "groups": {
         "general": "Allgemein",
         "user_management": "Benutzerverwaltung",
-        "account": "Konto"
+        "account": "Konto",
+        "workdesk": "Arbeitsbereich",
+        "configuration": "Konfiguration"
       },
       "overview": "Workspace-Start",
       "users": "Benutzer",
       "roles": "Rollen",
-      "permissions": "Berechtigungen"
+      "permissions": "Berechtigungen",
+      "tasks": "Aufgaben",
+      "scheduler": "Planer",
+      "task_templates": "Aufgabenvorlagen",
+      "task_album": "Fotoalbum"
     },
     "loading": "Wird geladen...",
     "actions": {
@@ -236,6 +256,165 @@
     "unauthorized": {
       "title": "Zugriff verweigert",
       "subtitle": "Du hast keine Berechtigung für diesen Bereich."
+    },
+    "notifications": {
+      "menu_label": "Benachrichtigungen",
+      "title": "Meine Benachrichtigungen",
+      "subtitle": "Verfolge Zuweisungen und neue Kommentare zu deinen Aufgaben.",
+      "empty": "Keine Benachrichtigungen vorhanden.",
+      "empty_short": "Keine neuen Benachrichtigungen.",
+      "mark_read": "Als gelesen markieren",
+      "mark_all_read": "Alle als gelesen markieren",
+      "push_enable": "Geraete-Benachrichtigungen aktivieren",
+      "push_disable": "Geraete-Benachrichtigungen deaktivieren",
+      "push_unsupported": "Dieser Browser unterstuetzt keine Push-Benachrichtigungen.",
+      "push_enable_failed": "Geraete-Benachrichtigungen konnten nicht aktiviert werden.",
+      "push_disable_failed": "Geraete-Benachrichtigungen konnten nicht deaktiviert werden.",
+      "defaults": {
+        "user": "Benutzer"
+      },
+      "events": {
+        "task_assigned_short": "{{actor}} hat zugewiesen: {{task_title}}",
+        "task_comment_short": "{{actor}} kommentierte: {{task_title}}",
+        "task_assigned": "{{actor}} hat dir eine Tagesaufgabe zugewiesen: {{task_title}}",
+        "task_comment": "{{actor}} hat \"{{task_title}}\" kommentiert.",
+        "unknown": "Benachrichtigung"
+      }
+    },
+    "task_templates": {
+      "title": "Aufgabenvorlagen",
+      "subtitle": "Wiederverwendbare Titel fuer Tagesaufgaben verwalten.",
+      "create": "Neue Vorlage",
+      "edit": "Vorlage bearbeiten",
+      "search": "Vorlagen suchen",
+      "title_col": "Vorlagentitel",
+      "delete_title": "Vorlage loeschen",
+      "delete_confirm": "Vorlage \"{{title}}\" loeschen?"
+    },
+    "task_album": {
+      "title": "Fotoalbum",
+      "subtitle": "Alle hochgeladenen Bilder mit Suche, Sortierung und Metadaten bearbeiten.",
+      "search": "Bilder suchen",
+      "filter_all_album_keys": "Alle Album-Schluessel",
+      "edit": "Bildmetadaten bearbeiten",
+      "delete_title": "Bild loeschen",
+      "delete_confirm": "Bild \"{{title}}\" loeschen?",
+      "delete_warning": "Diese Aktion entfernt die Bilddatei dauerhaft.",
+      "open_reference": "Referenz oeffnen",
+      "columns": {
+        "preview": "Vorschau",
+        "title": "Bildtitel",
+        "album_key": "Album-Schluessel",
+        "task_title": "Aufgabentitel",
+        "size": "Groesse",
+        "created_at": "Hochgeladen am"
+      }
+    },
+    "tasks": {
+      "title": "Tagesaufgaben",
+      "subtitle": "Eigene und zugewiesene Tagesaufgaben verwalten.",
+      "scheduler_button": "Planen",
+      "new_task": "Neue Tagesaufgabe",
+      "search_failed": "Vorlagensuche fehlgeschlagen.",
+      "captured_success": "Tagesaufgabe erstellt.",
+      "updated_success": "Tagesaufgabe aktualisiert.",
+      "deleted_success": "Tagesaufgabe geloescht.",
+      "done_success": "Tagesaufgabe als erledigt markiert.",
+      "empty": "Keine Tagesaufgaben vorhanden.",
+      "overdue_open": "Ueberfaellige offene Aufgaben",
+      "staff_day_board_title": "Tagesliste nach Mitarbeitern",
+      "staff_day_empty": "Keine Aufgaben fuer diesen Tag gefunden.",
+      "filter_by_staff": "Nach Mitarbeiter filtern",
+      "filter_all_staff": "Alle Mitarbeiter",
+      "assigned_to": "Zugewiesen an",
+      "created_by_label": "Erstellt von",
+      "open_detail": "Details",
+      "detail_title": "Details der Tagesaufgabe",
+      "delete_title": "Tagesaufgabe loeschen",
+      "delete_confirm": "Tagesaufgabe \"{{title}}\" loeschen?",
+      "edit": "Bearbeiten",
+      "mark_done": "Als erledigt markieren",
+      "status": {
+        "open": "Offen",
+        "done": "Erledigt"
+      },
+      "comments_title": "Kommentare",
+      "no_comments": "Noch keine Kommentare.",
+      "system_comment": "System",
+      "add_comment": "Kommentar hinzufuegen",
+      "submit_comment": "Kommentar senden",
+      "comment_saved": "Kommentar hinzugefuegt.",
+      "comment_deleted": "Kommentar geloescht.",
+      "comment_sync_pending": "Synchronisierung ausstehend",
+      "comment_sync_failed": "Synchronisierung fehlgeschlagen",
+      "task_sync_pending": "Synchronisierung ausstehend",
+      "task_sync_failed": "Synchronisierung fehlgeschlagen",
+      "task_sync_conflict": "Konflikt mit Server wurde aufgeloest",
+      "sync_now": "Jetzt synchronisieren",
+      "sync_now_success": "Synchronisierung abgeschlossen.",
+      "sync_now_failed": "Synchronisierung fehlgeschlagen.",
+      "dead_letter_title": "{{count}} fehlgeschlagene Sync-Operationen brauchen Aufmerksamkeit",
+      "dead_letter_subtitle": "Fehlgeschlagene lokale Operationen erneut versuchen oder verwerfen.",
+      "dead_letter_retry": "Erneut versuchen",
+      "dead_letter_discard": "Verwerfen",
+      "dead_letter_retry_success": "Fehlgeschlagene Operation wurde wieder zur Synchronisierung eingeplant.",
+      "dead_letter_retry_failed": "Diese fehlgeschlagene Operation konnte nicht erneut versucht werden.",
+      "dead_letter_discarded": "Fehlgeschlagene Operation verworfen.",
+      "dead_letter_type": {
+        "create": "Aufgabe erstellen",
+        "update": "Aufgabe aktualisieren",
+        "delete": "Aufgabe loeschen",
+        "comment_add": "Kommentar hinzufuegen",
+        "comment_delete": "Kommentar loeschen",
+        "attachment_add": "Bild hochladen"
+      },
+      "attachments": {
+        "title": "Bilder",
+        "empty": "Noch keine Bilder hochgeladen.",
+        "upload_from_device": "Vom Geraet hochladen",
+        "upload_from_camera": "Mit Kamera aufnehmen",
+        "capture": "Foto aufnehmen",
+        "preview": "Bildvorschau",
+        "delete": "Bild loeschen",
+        "delete_warning": "Dieses Bild dauerhaft loeschen?",
+        "camera_not_supported": "Kamera wird auf diesem Geraet/Brower nicht unterstuetzt.",
+        "camera_open_failed": "Geraetekamera konnte nicht geoeffnet werden.",
+        "upload_failed": "Bild-Upload fehlgeschlagen. Bitte kleinere Datei nutzen oder PHP Upload-Limits pruefen.",
+        "sync_pending": "Bild-Upload wurde eingereiht und wird automatisch synchronisiert.",
+        "uploaded_success": "Bild(er) erfolgreich hochgeladen.",
+        "deleted_success": "Bild geloescht."
+      },
+      "scheduler": {
+        "title": "Aufgabenplaner",
+        "subtitle": "Tages- und Wochenplanung fuer operative Aufgaben.",
+        "today": "Heute",
+        "day": "Tag",
+        "week": "Woche",
+        "detail_title": "Aufgabendetails",
+        "start": "Start",
+        "end": "Ende",
+        "comments": "Kommentare",
+        "no_comments": "Noch keine Kommentare.",
+        "add_comment": "Kommentar hinzufuegen",
+        "submit_comment": "Kommentar speichern",
+        "comment_saved": "Kommentar gespeichert."
+      },
+      "form": {
+        "title": "Aufgabentitel",
+        "placeholder": "Zum Beispiel: Reinigung Suite 53",
+        "hint": "Vorschlag waehlen oder frei texten.",
+        "capture": "Aufgabe erfassen",
+        "update": "Aufgabe aktualisieren",
+        "assignees": "Zugewiesene Mitarbeiter",
+        "assignees_placeholder": "Eine oder mehrere Personen auswaehlen",
+        "assignees_hint": "Aufgaben sind fuer zugewiesene Benutzer und Manager sichtbar.",
+        "status": "Status",
+        "starts_at": "Startdatum",
+        "starts_time": "Startzeit",
+        "ends_at": "Enddatum",
+        "ends_time": "Endzeit",
+        "date_placeholder": "Datum waehlen"
+      }
     }
   },
   "profile": {

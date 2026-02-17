@@ -18,6 +18,15 @@ Moderne Laravel- und Angular-Workspace-Plattform für mehrsprachige, testbare un
 - Lokalisierung für Persisch, Englisch und Deutsch
 - Telegram Social Login
 
+## Neue WorkHub-Features
+- Tagesaufgaben-Modul (Aufgaben erfassen, bearbeiten, zuweisen, erledigen, loeschen)
+- Kommentare in Aufgaben-Dialogen mit Sync-Status
+- Fotoverwaltung bei Aufgaben (Upload vom Geraet, Kameraaufnahme, Vorschau, Loeschen)
+- Benachrichtigungen fuer Aufgaben-Zuweisungen und neue Kommentare
+- Offline-First Synchronisierung mit Retry/Discard fuer fehlgeschlagene Operationen
+- Rechtebasierter Fotozugriff (Datei-Endpunkte nur fuer Task-Management-Rollen)
+- Header-Steuerung fuer Sprache und Light/Dark Modus
+
 ## Schnellstart
 - Backend:
   - `cd backend && composer install`

@@ -1,6 +1,148 @@
 <section class="dashboard">
-  <div class="dashboard__card">
+  <div class="dashboard__hero">
     <h2>{{ 'dashboard.title' | transloco }}</h2>
     <p>{{ 'dashboard.subtitle' | transloco }}</p>
   </div>
+
+  @if (errorMessage) {
+    <div class="dashboard__error">{{ errorMessage | transloco }}</div>
+  }
+
+  @if (isLoading) {
+    <div class="dashboard__panel dashboard__panel--muted">{{ 'admin.loading' | transloco }}</div>
+  } @else {
+    <div class="dashboard__grid">
+      @if (canAccessTasks) {
+        <article class="dashboard__panel">
+          <header class="dashboard__panel-head">
+            <div>
+              <h3>{{ 'dashboard.my_open_tasks_title' | transloco }}</h3>
+              <p>{{ 'dashboard.my_open_tasks_subtitle' | transloco }}</p>
+            </div>
+            <div class="dashboard__panel-head-actions">
+              <a class="dashboard__metric-chip dashboard__metric-chip--link" routerLink="/dashboard/tasks/new">
+                {{ myOpenTasksCountLabel }}
+              </a>
+              <button type="button" class="dashboard__collapse-btn" (click)="toggleSection('my_open_tasks')">
+                <i class="pi pi-angle-down" [class.is-collapsed]="isSectionCollapsed('my_open_tasks')"></i>
+              </button>
+            </div>
+          </header>
+
+          @if (!isSectionCollapsed('my_open_tasks')) {
+            @if (myOpenTasks.length === 0) {
+              <div class="dashboard__empty">{{ 'dashboard.my_open_tasks_empty' | transloco }}</div>
+            } @else {
+              <div class="dashboard__list">
+                @for (task of myOpenTasks; track task.id) {
+                  <article class="dashboard__item dashboard__item--open">
+                    <div class="dashboard__item-main">
+                      <strong>{{ task.title }}</strong>
+                    </div>
+                    <a
+                      class="dashboard__icon-link"
+                      [routerLink]="['/dashboard/tasks/new']"
+                      [queryParams]="{ open_task: task.id }"
+                      [attr.aria-label]="'dashboard.open_tasks_link' | transloco"
+                    >
+                      <i class="pi pi-eye"></i>
+                    </a>
+                  </article>
+                }
+              </div>
+            }
+          }
+          <footer class="dashboard__panel-footer">
+            <a class="dashboard__footer-cta" [routerLink]="['/dashboard/tasks/new']" [queryParams]="{ open_new: 1 }">
+              <i class="pi pi-plus-circle"></i>
+              {{ 'dashboard.create_task_cta' | transloco }}
+            </a>
+          </footer>
+        </article>
+      }
+
+      @if (canManageUsers) {
+        <article class="dashboard__panel">
+          <header class="dashboard__panel-head">
+            <div>
+              <h3>{{ 'dashboard.latest_users_title' | transloco }}</h3>
+              <p>{{ 'dashboard.latest_users_subtitle' | transloco }}</p>
+            </div>
+            <div class="dashboard__panel-head-actions">
+              <a class="dashboard__metric-chip dashboard__metric-chip--link" routerLink="/dashboard/users">
+                {{ usersTotalLabel }}
+              </a>
+              <button type="button" class="dashboard__collapse-btn" (click)="toggleSection('latest_users')">
+                <i class="pi pi-angle-down" [class.is-collapsed]="isSectionCollapsed('latest_users')"></i>
+              </button>
+            </div>
+          </header>
+
+          @if (!isSectionCollapsed('latest_users')) {
+            @if (recentUsers.length === 0) {
+              <div class="dashboard__empty">{{ 'dashboard.latest_users_empty' | transloco }}</div>
+            } @else {
+              <div class="dashboard__list">
+                @for (user of recentUsers; track user.id) {
+                  <article class="dashboard__item">
+                    <div class="dashboard__item-main">
+                      <strong>{{ userLabel(user) }}</strong>
+                      <small>{{ user.username }}</small>
+                    </div>
+                    <a class="dashboard__icon-link" [routerLink]="['/dashboard/users', user.id, 'profile']" [attr.aria-label]="'dashboard.open_profile_link' | transloco">
+                      <i class="pi pi-user-edit"></i>
+                    </a>
+                  </article>
+                }
+              </div>
+            }
+          }
+        </article>
+      }
+
+      @if (canManageStaffs) {
+        <article class="dashboard__panel">
+          <header class="dashboard__panel-head">
+            <div>
+              <h3>{{ 'dashboard.today_done_tasks_title' | transloco }}</h3>
+              <p>{{ 'dashboard.today_done_tasks_subtitle' | transloco }}</p>
+            </div>
+            <div class="dashboard__panel-head-actions">
+              <a class="dashboard__metric-chip dashboard__metric-chip--link" routerLink="/dashboard/tasks/new">
+                {{ todayDoneTasksCountLabel }}
+              </a>
+              <button type="button" class="dashboard__collapse-btn" (click)="toggleSection('today_done_tasks')">
+                <i class="pi pi-angle-down" [class.is-collapsed]="isSectionCollapsed('today_done_tasks')"></i>
+              </button>
+            </div>
+          </header>
+
+          @if (!isSectionCollapsed('today_done_tasks')) {
+            @if (todayDoneTasks.length === 0) {
+              <div class="dashboard__empty">{{ 'dashboard.today_done_tasks_empty' | transloco }}</div>
+            } @else {
+              <div class="dashboard__list">
+                @for (task of todayDoneTasks; track task.id) {
+                  <article class="dashboard__item dashboard__item--done">
+                    <div class="dashboard__item-main">
+                      <strong>{{ task.title }}</strong>
+                      <small>{{ doneTaskAssignees(task) }}</small>
+                    </div>
+                    <a
+                      class="dashboard__icon-link"
+                      [routerLink]="['/dashboard/tasks/new']"
+                      [queryParams]="{ open_task: task.id }"
+                      [attr.aria-label]="'dashboard.open_tasks_link' | transloco"
+                    >
+                      <i class="pi pi-eye"></i>
+                    </a>
+                  </article>
+                }
+              </div>
+            }
+          }
+        </article>
+      }
+    </div>
+  }
 </section>

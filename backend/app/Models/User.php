@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,6 +13,7 @@ use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\PasswordResetNotification;
 use App\Models\Permission;
+use App\Models\PushSubscription;
 use App\Models\Role;
 
 /**
@@ -93,9 +95,9 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the tasks assigned to the user.
      */
-    public function tasks(): HasMany
+    public function tasks(): BelongsToMany
     {
-        return $this->hasMany(Task::class, 'assigned_to');
+        return $this->belongsToMany(Task::class, 'task_user')->withTimestamps();
     }
 
     /**
@@ -136,6 +138,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function socialAccounts(): HasMany
     {
         return $this->hasMany(SocialAccount::class);
+    }
+
+    /**
+     * Push subscriptions registered by this user across devices/browsers.
+     */
+    public function pushSubscriptions(): HasMany
+    {
+        return $this->hasMany(PushSubscription::class);
     }
 
     /**
@@ -193,6 +203,34 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('slug', $slug)
             ->whereHas('roles', fn ($query) => $query->whereIn('roles.id', $roleIds))
             ->exists();
+    }
+
+    /**
+     * Check whether the user may use task features at all.
+     *
+     * Rules:
+     * - `manage_tasks`: regular task access (own/assigned scope)
+     * - `manage_staffs`: elevated task management access (manager/admin equivalent)
+     */
+    public function canAccessTasks(): bool
+    {
+        return $this->hasPermission('manage_tasks') || $this->hasPermission('manage_staffs');
+    }
+
+    /**
+     * Elevated task capability used for cross-staff/global task management.
+     */
+    public function canManageStaffTasks(): bool
+    {
+        return $this->hasPermission('manage_staffs');
+    }
+
+    /**
+     * Backward-compatible alias for elevated task capability.
+     */
+    public function isManager(): bool
+    {
+        return $this->canManageStaffTasks();
     }
 
     /**

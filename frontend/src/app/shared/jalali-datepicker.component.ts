@@ -28,6 +28,7 @@ export class JalaliDatepickerComponent implements ControlValueAccessor {
   @Input() invalid = false;
   @Input() inputId?: string;
   @Input() disabled = false;
+  @Input() openToTodayWhenEmpty = false;
 
   displayValue = '';
   gregorianValue = '';
@@ -153,7 +154,9 @@ export class JalaliDatepickerComponent implements ControlValueAccessor {
       return;
     }
     if (!this.gregorianValue) {
-      const fallback = this.defaultGregorianDate();
+      // When requested by caller, empty fields should open on today's date context.
+      // This is useful for task due-date pickers where the input stays empty by default.
+      const fallback = this.openToTodayWhenEmpty ? this.todayGregorianDate() : this.defaultGregorianDate();
       const jalali = DateUtils.toJalali(fallback);
       const [jy, jm] = jalali.split('/').map((part) => Number(part));
       if (Number.isFinite(jy) && Number.isFinite(jm)) {
@@ -358,6 +361,7 @@ export class JalaliDatepickerComponent implements ControlValueAccessor {
   }
 
   private defaultGregorianDate(): string {
+    // Legacy default context used by profile-like date pickers (historical dates).
     const now = new Date();
     const fallback = new Date(Date.UTC(
       now.getUTCFullYear() - 18,
@@ -365,5 +369,10 @@ export class JalaliDatepickerComponent implements ControlValueAccessor {
       now.getUTCDate()
     ));
     return `${String(fallback.getUTCFullYear()).padStart(4, '0')}-${String(fallback.getUTCMonth() + 1).padStart(2, '0')}-${String(fallback.getUTCDate()).padStart(2, '0')}`;
+  }
+
+  private todayGregorianDate(): string {
+    const now = new Date();
+    return `${String(now.getUTCFullYear()).padStart(4, '0')}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
   }
 }

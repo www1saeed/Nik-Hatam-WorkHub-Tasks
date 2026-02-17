@@ -1,4 +1,4 @@
-﻿import { DOCUMENT } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { inject, Injectable } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject } from 'rxjs';
@@ -68,4 +68,3 @@ export class LanguageService {
     return 'fa';
   }
 }
-

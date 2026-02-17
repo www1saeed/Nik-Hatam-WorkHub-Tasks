@@ -22,4 +22,10 @@ return [
         'bot_username' => env('TELEGRAM_BOT_USERNAME'),
         'login_ttl' => (int) env('TELEGRAM_LOGIN_TTL', 86400),
     ],
+
+    'webpush' => [
+        'vapid_public_key' => env('VAPID_PUBLIC_KEY'),
+        'vapid_private_key' => env('VAPID_PRIVATE_KEY'),
+        'vapid_subject' => env('VAPID_SUBJECT', env('APP_URL', 'http://localhost')),
+    ],
 ];

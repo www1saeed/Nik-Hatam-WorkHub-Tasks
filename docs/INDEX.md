@@ -2,6 +2,7 @@
 
 ## Projekt und Überblick
 - Haupt-README: [README.md](../README.md)
+- Frontend-README: [frontend/README.md](../frontend/README.md)
 - EN Overview: [README_EN.md](../README_EN.md)
 - DE Übersicht: [README_DE.md](../README_DE.md)
 - FA معرفی: [README_FA.md](../README_FA.md)

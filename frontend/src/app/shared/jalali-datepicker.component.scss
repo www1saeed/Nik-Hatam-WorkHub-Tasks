@@ -1,4 +1,4 @@
-﻿.jalali-picker {
+.jalali-picker {
   position: relative;
   width: 100%;
 }
@@ -20,15 +20,15 @@
 }
 
 .jalali-picker__field--invalid {
-  border-color: var(--brand-danger-strong);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-danger) 20%, transparent);
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
 }
 
 .jalali-picker__trigger {
-  border: 1px solid var(--accent-dark);
+  border: 1px solid var(--brand-gold-dark);
   height: 3.1rem;
   border-radius: 0 12px 12px 0;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-dark));
   color: var(--brand-white);
   display: inline-flex;
   align-items: center;
@@ -42,13 +42,11 @@
   top: calc(100% + 0.5rem);
   inset-inline-end: 0;
   width: min(320px, 100vw - 2rem);
-  background: var(--card-bg);
-  color: var(--brand-text);
-  border: 1px solid var(--border-color);
+  background: #fff;
   border-radius: 16px;
   box-shadow: var(--card-shadow);
   padding: 0.75rem;
-  z-index: 20;
+  z-index: 17000;
 }
 
 .jalali-picker__header {
@@ -73,23 +71,17 @@
   padding: 0.25rem 0.6rem;
   font-size: 0.85rem;
   cursor: pointer;
-  color: var(--text-strong)
 }
 .jalali-picker__title-btn:hover {
-  background: var(--brand-blue-soft-light);
-  color: var(--brand-blue-deep);
-}
-
-.jalali-picker__title-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent);
+  background: rgba(58, 166, 198, 0.08);
+  color: #1b6f88;
 }
 
 
 .jalali-picker__nav {
   border: none;
   background: transparent;
-  color: var(--state-link);
+  color: #2563eb;
   width: 34px;
   height: 34px;
   border-radius: 10px;
@@ -100,7 +92,7 @@
 }
 
 .jalali-picker__nav:hover {
-  background: var(--state-info-bg);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .jalali-picker__weekdays {
@@ -129,7 +121,7 @@
 .jalali-picker__year {
   border: none;
   background: transparent;
-  color: var(--brand-text);
+  color: #0f172a;
   border-radius: 12px;
   padding: 0.5rem 0;
   font-size: 0.85rem;
@@ -138,14 +130,14 @@
 
 .jalali-picker__month.is-selected,
 .jalali-picker__year.is-selected {
-  background: var(--brand-blue-soft-strong);
-  color: var(--brand-blue-deep);
+  background: rgba(58, 166, 198, 0.35);
+  color: #1b6f88;
   font-weight: 600;
 }
 
 .jalali-picker__month:hover,
 .jalali-picker__year:hover {
-  background: var(--brand-blue-soft);
+  background: rgba(58, 166, 198, 0.2);
 }
 
 .jalali-picker__day {
@@ -155,7 +147,7 @@
   padding: 0.45rem 0;
   font-size: 0.85rem;
   cursor: pointer;
-  color: var(--brand-text);
+  color: #0f172a;
 }
 
 .jalali-picker__day.is-empty {
@@ -164,19 +156,19 @@
 }
 
 .jalali-picker__day.is-selected {
-  background: var(--state-info-strong-bg);
-  color: var(--state-link);
+  background: rgba(37, 99, 235, 0.16);
+  color: #1d4ed8;
   font-weight: 600;
 }
 
 .jalali-picker__day.is-today:not(.is-selected) {
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  color: var(--brand-blue-deep);
+  border: 1px solid rgba(58, 166, 198, 0.5);
+  color: #1b6f88;
   font-weight: 600;
 }
 
 .jalali-picker__day:hover:not(.is-empty) {
-  background: var(--state-info-bg);
+  background: rgba(37, 99, 235, 0.1);
 }
 
 .jalali-picker.is-disabled {
@@ -186,11 +178,10 @@
 
 @media (max-width: 720px) {
   .jalali-picker__panel {
-    position: fixed;
-    inset-inline: 1rem;
-    top: auto;
-    bottom: 1rem;
-    width: calc(100% - 2rem);
+    position: absolute;
+    inset-inline-end: 0;
+    top: calc(100% + 0.5rem);
+    width: min(320px, 100vw - 2rem);
   }
 
   .jalali-picker__title {
@@ -204,7 +195,7 @@
 }
 
 .jalali-picker__trigger:hover {
-  background: var(--accent-dark);
+  background: linear-gradient(135deg, var(--brand-gold-hover), var(--brand-gold-deep));
 }
 
 .jalali-picker__trigger:focus {

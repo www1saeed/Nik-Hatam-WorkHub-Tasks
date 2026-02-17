@@ -23,6 +23,15 @@ Production-ready Laravel + Angular workspace platform for multilingual business 
 - Social auth: Telegram-based login/registration flows.
 - PWA assets: manifest, icons, browser config integration.
 
+## WorkHub feature modules
+- Daily responsibilities (tasks): create, edit, assign, mark done, and delete.
+- Task comments: threaded operational notes with sync-state badges.
+- Task photos: upload from device, capture from camera, preview, and delete.
+- Notifications: unread badge, short feed in header, and dedicated notifications page.
+- Offline-first sync: local queue for task/comment/photo operations with retry and dead-letter handling.
+- Photo access control: photo files are served only to roles with task-management permissions.
+- Theme + language UX: light/dark mode toggle and Persian/English/German switching in header.
+
 ## Technology stack
 - Backend: Laravel 11, Sanctum, MySQL
 - Frontend: Angular 21, PrimeNG, Transloco

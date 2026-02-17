@@ -1,0 +1,89 @@
+<section class="notifications-page">
+  <div class="notifications-page__hero">
+    <div>
+      <h2>{{ 'admin.notifications.title' | transloco }}</h2>
+      <p>{{ 'admin.notifications.subtitle' | transloco }}</p>
+    </div>
+    <div class="notifications-page__actions">
+      <span class="notifications-page__badge">{{ unreadCountLabel() }}</span>
+      @if (isPushSupported) {
+        @if (isPushEnabled) {
+          <button
+            type="button"
+            class="notifications-page__push-btn notifications-page__push-btn--enabled"
+            [disabled]="isPushBusy"
+            (click)="disableDevicePush()"
+          >
+            <i class="pi pi-bell-slash"></i>
+            {{ 'admin.notifications.push_disable' | transloco }}
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="notifications-page__push-btn"
+            [disabled]="isPushBusy"
+            (click)="enableDevicePush()"
+          >
+            <i class="pi pi-bell"></i>
+            {{ 'admin.notifications.push_enable' | transloco }}
+          </button>
+        }
+      } @else {
+        <span class="notifications-page__push-unsupported">{{ 'admin.notifications.push_unsupported' | transloco }}</span>
+      }
+      <button
+        type="button"
+        class="notifications-page__mark-all"
+        [disabled]="isMarkingAll || unreadCount === 0"
+        (click)="markAllRead()"
+      >
+        <i class="pi pi-check-circle"></i>
+        {{ 'admin.notifications.mark_all_read' | transloco }}
+      </button>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="notifications-page__error">{{ errorMessage | transloco }}</div>
+  }
+
+  @if (isLoading) {
+    <div class="notifications-page__panel notifications-page__panel--muted">{{ 'admin.loading' | transloco }}</div>
+  } @else if (notifications.length === 0) {
+    <div class="notifications-page__panel notifications-page__panel--muted">{{ 'admin.notifications.empty' | transloco }}</div>
+  } @else {
+    <div class="notifications-page__list">
+      @for (item of notifications; track item.id) {
+        <article
+          class="notifications-page__item"
+          [class.is-unread]="!item.is_read"
+          role="button"
+          tabindex="0"
+          (click)="openTask(item)"
+          (keydown.enter)="openTask(item)"
+          (keydown.space)="openTask(item); $event.preventDefault()"
+        >
+          <div class="notifications-page__head">
+            <span class="notifications-page__dot" [class.is-visible]="!item.is_read"></span>
+            <strong>{{ messageFor(item) }}</strong>
+            <time>{{ formatTimestamp(item.created_at) }}</time>
+          </div>
+          @if (excerptFor(item)) {
+            <p>{{ excerptFor(item) }}</p>
+          }
+          <div class="notifications-page__foot">
+            @if (!item.is_read) {
+              <button
+                type="button"
+                class="notifications-page__inline-btn"
+                (click)="markSingleRead(item); $event.stopPropagation()"
+              >
+                {{ 'admin.notifications.mark_read' | transloco }}
+              </button>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

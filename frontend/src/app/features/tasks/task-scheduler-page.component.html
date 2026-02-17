@@ -1,0 +1,518 @@
+<section class="task-scheduler">
+  <div class="task-scheduler__hero">
+    <div>
+      <h2>{{ 'admin.tasks.scheduler.title' | transloco }}</h2>
+      <p>{{ 'admin.tasks.scheduler.subtitle' | transloco }}</p>
+    </div>
+    <div class="task-scheduler__controls">
+      <button
+        type="button"
+        class="task-scheduler__view-btn"
+        [class.is-active]="selectedView === 'timeGridDay'"
+        (click)="switchView('timeGridDay')"
+      >
+        {{ 'admin.tasks.scheduler.day' | transloco }}
+      </button>
+      <button
+        type="button"
+        class="task-scheduler__view-btn"
+        [class.is-active]="selectedView === 'timeGridWeek'"
+        (click)="switchView('timeGridWeek')"
+      >
+        {{ 'admin.tasks.scheduler.week' | transloco }}
+      </button>
+      <button type="button" class="task-scheduler__primary" (click)="openCreateModal()">
+        <i class="pi pi-plus"></i>
+        {{ 'admin.tasks.new_task' | transloco }}
+      </button>
+      @if (canFilterByPersonnel) {
+        <select
+          id="task-scheduler-assignee-filter"
+          class="task-scheduler__select"
+          [ngModel]="selectedAssigneeFilterId ?? ''"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onAssigneeFilterChange($event)"
+        >
+          <option value="">{{ 'admin.tasks.filter_all_staff' | transloco }}</option>
+          @for (option of assigneeOptions; track option.id) {
+            <option [value]="option.id">{{ option.label }}</option>
+          }
+        </select>
+      }
+    </div>
+  </div>
+  <div class="task-scheduler__range-row">
+    <div class="task-scheduler__range">{{ visibleRangeLabel }}</div>
+    <div class="task-scheduler__range-actions">
+      <button type="button" class="task-scheduler__ghost" (click)="goPrev()">
+        <i class="pi pi-angle-left"></i>
+      </button>
+      <button type="button" class="task-scheduler__ghost task-scheduler_gotoday" (click)="goToday()">
+        {{ 'admin.tasks.scheduler.today' | transloco }}
+      </button>
+      <button type="button" class="task-scheduler__ghost" (click)="goNext()">
+        <i class="pi pi-angle-right"></i>
+      </button>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="task-scheduler__error">{{ errorMessage | transloco }}</div>
+  }
+  @if (successMessage) {
+    <div class="task-scheduler__success">{{ successMessage | transloco }}</div>
+  }
+  @if (hasPendingSyncTasks || hasFailedSyncTasks) {
+    <div class="task-scheduler__sync-banner">
+      <span class="task-scheduler__sync-banner-text">
+        {{ (hasFailedSyncTasks ? 'admin.tasks.task_sync_failed' : 'admin.tasks.task_sync_pending') | transloco }}
+      </span>
+      <button type="button" class="task-scheduler__ghost" (click)="syncNow()" [disabled]="isSyncingNow">
+        <i class="pi pi-refresh"></i>
+        {{ 'admin.tasks.sync_now' | transloco }}
+      </button>
+    </div>
+  }
+  @if (hasDeadLetters) {
+    <div class="task-scheduler__dead-letter-panel">
+      <div class="task-scheduler__dead-letter-head">
+        <strong>{{ 'admin.tasks.dead_letter_title' | transloco:{ count: deadLetters.length } }}</strong>
+        <span>{{ 'admin.tasks.dead_letter_subtitle' | transloco }}</span>
+      </div>
+      <div class="task-scheduler__dead-letter-list">
+        @for (entry of deadLetters; track entry.id) {
+          <article class="task-scheduler__dead-letter-item">
+            <div class="task-scheduler__dead-letter-meta">
+              <span class="task-scheduler__dead-letter-type">{{ deadLetterTypeLabelKey(entry) | transloco }}</span>
+              <span class="task-scheduler__dead-letter-task">{{ deadLetterTaskTitle(entry) }}</span>
+              <small class="task-scheduler__dead-letter-reason">{{ entry.reason }}</small>
+            </div>
+            <div class="task-scheduler__dead-letter-actions">
+              <button type="button" class="task-scheduler__ghost" (click)="retryDeadLetter(entry)">
+                <i class="pi pi-refresh"></i>
+                {{ 'admin.tasks.dead_letter_retry' | transloco }}
+              </button>
+              <button type="button" class="task-scheduler__ghost task-scheduler__ghost--danger" (click)="discardDeadLetter(entry)">
+                <i class="pi pi-trash"></i>
+                {{ 'admin.tasks.dead_letter_discard' | transloco }}
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="task-scheduler__card">
+    @if (isLoading) {
+      <div class="task-scheduler__loading">{{ 'admin.loading' | transloco }}</div>
+    } @else {
+      <div class="task-scheduler__calendar-surface">
+        <full-calendar #calendarRef [options]="calendarOptions"></full-calendar>
+      </div>
+    }
+  </div>
+</section>
+
+<p-dialog
+  [(visible)]="isTaskModalOpen"
+  [modal]="true"
+  [closable]="true"
+  [header]="editingTaskId ? ('admin.tasks.form.update' | transloco) : ('admin.tasks.new_task' | transloco)"
+  styleClass="task-scheduler-dialog"
+  [style]="{ width: 'min(760px, 96vw)' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  (onHide)="closeTaskModal()"
+>
+  @if (taskModalError) {
+    <div class="task-scheduler__error">{{ taskModalError | transloco }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="saveTask()" class="task-scheduler__modal-form">
+    <label class="task-scheduler__label" for="scheduler-task-title">{{ 'admin.tasks.form.title' | transloco }}</label>
+    <p-autoComplete
+      inputId="scheduler-task-title"
+      formControlName="title"
+      [suggestions]="templateSuggestions"
+      [dropdown]="true"
+      [forceSelection]="false"
+      [minQueryLength]="0"
+      [delay]="250"
+      [placeholder]="'admin.tasks.form.placeholder' | transloco"
+      [fluid]="true"
+      appendTo="body"
+      (completeMethod)="searchTemplates($event)"
+      (onSelect)="onTemplateSelected($event)"
+    />
+    @if (form.controls.title.touched && form.controls.title.hasError('required')) {
+      <small class="task-scheduler__field-error">{{ 'auth.errors.required' | transloco }}</small>
+    }
+
+    <div class="task-scheduler__datetime-grid">
+      <div class="task-scheduler__field">
+        <span>{{ 'admin.tasks.form.starts_at' | transloco }}</span>
+        @if (languageService.getLanguage() === 'fa') {
+          <app-jalali-datepicker
+            inputId="scheduler-starts-date"
+            formControlName="starts_date"
+            [placeholder]="'admin.tasks.form.date_placeholder' | transloco"
+          />
+        } @else {
+          <input type="date" formControlName="starts_date" />
+        }
+      </div>
+      <label class="task-scheduler__field">
+        <span>{{ 'admin.tasks.form.starts_time' | transloco }}</span>
+        <input
+          class="task-scheduler__time-input"
+          type="time"
+          formControlName="starts_time"
+          step="300"
+          autocomplete="off"
+        />
+      </label>
+    </div>
+
+    <div class="task-scheduler__datetime-grid">
+      <div class="task-scheduler__field">
+        <span>{{ 'admin.tasks.form.ends_at' | transloco }}</span>
+        @if (languageService.getLanguage() === 'fa') {
+          <app-jalali-datepicker
+            inputId="scheduler-ends-date"
+            formControlName="ends_date"
+            [openToTodayWhenEmpty]="true"
+            [placeholder]="'admin.tasks.form.date_placeholder' | transloco"
+          />
+        } @else {
+          <input type="date" formControlName="ends_date" />
+        }
+      </div>
+      <label class="task-scheduler__field">
+        <span>{{ 'admin.tasks.form.ends_time' | transloco }}</span>
+        <input
+          class="task-scheduler__time-input"
+          type="time"
+          formControlName="ends_time"
+          step="300"
+          autocomplete="off"
+        />
+      </label>
+    </div>
+
+    <label class="task-scheduler__label task-scheduler__label--spaced" for="scheduler-task-assignees">{{ 'admin.tasks.form.assignees' | transloco }}</label>
+    <p-multiSelect
+      inputId="scheduler-task-assignees"
+      formControlName="assigned_user_ids"
+      [options]="assigneeOptions"
+      optionLabel="label"
+      optionValue="id"
+      [showClear]="true"
+      [filter]="true"
+      [placeholder]="'admin.tasks.form.assignees_placeholder' | transloco"
+      class="task-scheduler__assignees"
+      appendTo="body"
+    />
+    @if (form.controls.assigned_user_ids.touched && form.controls.assigned_user_ids.hasError('required')) {
+      <small class="task-scheduler__field-error">{{ 'auth.errors.required' | transloco }}</small>
+    }
+
+    <div class="task-dialog__attachments">
+      <h4>{{ 'admin.tasks.attachments.title' | transloco }}</h4>
+      @if (formAttachmentError) {
+        <div class="task-scheduler__error">{{ formAttachmentError | transloco }}</div>
+      }
+      <div class="task-dialog__attachment-actions">
+        <label class="task-scheduler__ghost task-dialog__file-btn">
+          <i class="pi pi-images"></i>
+          {{ 'admin.tasks.attachments.upload_from_device' | transloco }}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            (change)="onFormAttachmentFilesSelected($event)"
+            [disabled]="isTaskModalSubmitting"
+          />
+        </label>
+        <button
+          type="button"
+          class="task-scheduler__ghost task-dialog__file-btn"
+          (click)="onFormAttachmentCameraCaptured()"
+          [disabled]="isTaskModalSubmitting"
+        >
+          <i class="pi pi-camera"></i>
+          {{ 'admin.tasks.attachments.upload_from_camera' | transloco }}
+        </button>
+      </div>
+      @if (formAttachmentFiles.length > 0) {
+        <div class="task-dialog__form-attachment-list">
+          @for (file of formAttachmentFiles; track $index; let i = $index) {
+            <div class="task-dialog__form-attachment-item">
+              <span>{{ file.name }}</span>
+              <button type="button" class="task-scheduler__ghost" (click)="removeFormAttachmentAt(i)">
+                <i class="pi pi-times"></i>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="task-scheduler__done-toggle">
+      <p-toggleswitch
+        inputId="scheduler-task-status-done"
+        [ngModel]="isDoneChecked"
+        [ngModelOptions]="{ standalone: true }"
+        [disabled]="!canToggleDoneInForm"
+        (onChange)="onDoneToggle($event.checked)"
+      ></p-toggleswitch>
+      <label for="scheduler-task-status-done">{{ 'admin.tasks.mark_done' | transloco }}</label>
+    </div>
+
+    <div class="task-scheduler__modal-actions">
+      <button type="submit" class="task-scheduler__primary" [disabled]="isTaskModalSubmitting">
+        {{ editingTaskId ? ('admin.tasks.form.update' | transloco) : ('admin.tasks.form.capture' | transloco) }}
+      </button>
+      <button type="button" class="task-scheduler__ghost" (click)="closeTaskModal()">{{ 'admin.actions.cancel' | transloco }}</button>
+    </div>
+  </form>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="isDialogOpen"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: 'min(820px, 97vw)' }"
+  [header]="'admin.tasks.detail_title' | transloco"
+  (onHide)="closeDialog()"
+>
+  @if (isDialogLoading) {
+    <div class="task-scheduler__loading">{{ 'admin.loading' | transloco }}</div>
+  } @else if (selectedTask) {
+    <div class="task-dialog">
+      <h3>{{ selectedTask.title }}</h3>
+      @if (taskSyncBadgeKey(selectedTask); as syncKey) {
+        <div class="task-dialog__sync-badge task-dialog__sync-badge--task">{{ syncKey | transloco }}</div>
+      }
+      @if (canViewCreatorInfo) {
+        <div class="task-dialog__meta">
+          <span>{{ 'admin.tasks.created_by_label' | transloco }}: {{ selectedTask.creator?.first_name }} {{ selectedTask.creator?.last_name }}</span>
+        </div>
+      }
+      <div class="task-dialog__meta">
+        <span>{{ 'admin.tasks.scheduler.start' | transloco }}: {{ formatForDialog(selectedTask.starts_at ?? selectedTask.created_at) }}</span>
+      </div>
+      @if (selectedTask.ends_at) {
+        <div class="task-dialog__meta">
+          <span>{{ 'admin.tasks.scheduler.end' | transloco }}: {{ formatForDialog(selectedTask.ends_at) }}</span>
+        </div>
+      }
+      <div class="task-dialog__meta">
+        <span>{{ 'admin.tasks.assigned_to' | transloco }}:
+          @for (assignedUser of selectedTask.assigned_users; track assignedUser.id; let isLast = $last) {
+            {{ assignedUser.first_name }} {{ assignedUser.last_name }}@if (!isLast) {, }
+          }
+        </span>
+      </div>
+
+      <div class="task-dialog__comments">
+        <h4>{{ 'admin.tasks.comments_title' | transloco }}</h4>
+        @if ((selectedTask.comments ?? []).length === 0) {
+          <p class="task-dialog__muted">{{ 'admin.tasks.no_comments' | transloco }}</p>
+        } @else {
+          @for (comment of selectedTask.comments ?? []; track comment.id) {
+            @if (comment.is_system) {
+              <div class="task-dialog__system-line">{{ formatForDialog(comment.created_at) }}: {{ comment.comment }}</div>
+            } @else {
+              <article class="task-dialog__comment">
+                <div class="task-dialog__comment-head">
+                  <span>{{ comment.user?.first_name }} {{ comment.user?.last_name }}</span>
+                  <span>{{ formatForDialog(comment.created_at) }}</span>
+                  @if (comment.is_pending) {
+                    <span class="task-dialog__sync-badge task-dialog__sync-badge--pending">
+                      {{ 'admin.tasks.comment_sync_pending' | transloco }}
+                    </span>
+                  }
+                  @if (comment.sync_error) {
+                    <span class="task-dialog__sync-badge task-dialog__sync-badge--failed">
+                      {{ 'admin.tasks.comment_sync_failed' | transloco }}
+                    </span>
+                  }
+                </div>
+                @if (canDeleteComment(comment)) {
+                  <button
+                    type="button"
+                    class="task-dialog__comment-delete"
+                    (click)="deleteDetailComment(comment)"
+                    [disabled]="deletingCommentId === comment.id"
+                    [attr.aria-label]="'admin.actions.delete' | transloco"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                }
+                <p>{{ comment.comment }}</p>
+              </article>
+            }
+          }
+        }
+      </div>
+
+      <div class="task-dialog__attachments">
+        <h4>{{ 'admin.tasks.attachments.title' | transloco }}</h4>
+        @if (attachmentErrorMessage) {
+          <div class="task-scheduler__error">{{ attachmentErrorMessage | transloco }}</div>
+        }
+        <div class="task-dialog__attachment-actions">
+          <label class="task-scheduler__ghost task-dialog__file-btn">
+            <i class="pi pi-images"></i>
+            {{ 'admin.tasks.attachments.upload_from_device' | transloco }}
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              (change)="onAttachmentFilesSelected($event)"
+              [disabled]="!selectedTask.can_edit || isAttachmentUploading"
+            />
+          </label>
+          <button
+            type="button"
+            class="task-scheduler__ghost task-dialog__file-btn"
+            (click)="onAttachmentCameraCaptured()"
+            [disabled]="!selectedTask.can_edit || isAttachmentUploading"
+          >
+            <i class="pi pi-camera"></i>
+            {{ 'admin.tasks.attachments.upload_from_camera' | transloco }}
+          </button>
+        </div>
+        @if ((selectedTask.attachments ?? []).length === 0) {
+          <p class="task-dialog__muted">{{ 'admin.tasks.attachments.empty' | transloco }}</p>
+        } @else {
+          <div class="task-dialog__attachment-grid">
+            @for (attachment of selectedTask.attachments ?? []; track attachment.id) {
+              <article class="task-dialog__attachment-card">
+                <button
+                  type="button"
+                  class="task-dialog__attachment-thumb"
+                  (click)="openAttachmentPreview(attachment)"
+                  [attr.aria-label]="'admin.tasks.attachments.preview' | transloco"
+                >
+                  @if (attachmentThumbUrl(attachment.id); as thumbUrl) {
+                    <img [src]="thumbUrl" [alt]="attachment.title" />
+                  } @else {
+                    <span class="task-dialog__attachment-fallback"><i class="pi pi-image"></i></span>
+                  }
+                </button>
+                <div class="task-dialog__attachment-meta">
+                  <strong>{{ attachment.title }}</strong>
+                  <small>{{ attachment.original_name || '-' }}</small>
+                </div>
+                @if (attachment.can_delete) {
+                  <button
+                    type="button"
+                    class="task-dialog__comment-delete"
+                    (click)="deleteAttachment(attachment)"
+                    [disabled]="deletingAttachmentId === attachment.id"
+                    [attr.aria-label]="'admin.tasks.attachments.delete' | transloco"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                }
+              </article>
+            }
+          </div>
+        }
+      </div>
+
+      @if (selectedTask.can_edit) {
+        <div class="task-dialog__composer">
+          <label for="scheduler-detail-comment">{{ 'admin.tasks.add_comment' | transloco }}</label>
+          <textarea id="scheduler-detail-comment" [(ngModel)]="detailComment" [ngModelOptions]="{ standalone: true }"></textarea>
+          <button type="button" class="task-dialog__comment-submit" (click)="submitDetailComment()" [disabled]="isCommentSubmitting">
+            <i class="pi pi-send"></i>
+            {{ 'admin.tasks.submit_comment' | transloco }}
+          </button>
+        </div>
+      }
+
+      <div class="task-dialog__actions">
+        @if (selectedTask.can_mark_done && selectedTask.status !== 'done') {
+          <button type="button" class="task-scheduler__primary" (click)="markDone(selectedTask)">
+            <i class="pi pi-check-circle"></i>
+            {{ 'admin.tasks.mark_done' | transloco }}
+          </button>
+        }
+        @if (selectedTask.can_edit) {
+          <button type="button" class="task-scheduler__ghost" (click)="openEditModal(selectedTask)">
+            <i class="pi pi-pencil"></i>
+            {{ 'admin.tasks.edit' | transloco }}
+          </button>
+        }
+        @if (canDeleteTask(selectedTask)) {
+          <button type="button" class="task-scheduler__ghost task-scheduler__ghost--danger" (click)="openDeleteModal(selectedTask)">
+            <i class="pi pi-trash"></i>
+            {{ 'admin.actions.delete' | transloco }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<p-dialog
+  [(visible)]="isCameraDialogOpen"
+  [modal]="true"
+  [closable]="true"
+  [header]="'admin.tasks.attachments.upload_from_camera' | transloco"
+  [style]="{ width: 'min(760px, 96vw)' }"
+  (onHide)="closeCameraDialog()"
+>
+  @if (cameraErrorMessage) {
+    <div class="task-scheduler__error">{{ cameraErrorMessage | transloco }}</div>
+  }
+  <div class="task-dialog__camera-wrap">
+    <video #schedulerAttachmentCameraVideo class="task-dialog__camera-video" autoplay playsinline muted></video>
+  </div>
+  <div class="task-dialog__actions">
+    <button type="button" class="task-scheduler__primary" (click)="captureAttachmentPhoto()" [disabled]="isAttachmentUploading || isTaskModalSubmitting">
+      <i class="pi pi-camera"></i>
+      {{ 'admin.tasks.attachments.capture' | transloco }}
+    </button>
+    <button type="button" class="task-scheduler__ghost" (click)="closeCameraDialog()">{{ 'admin.actions.cancel' | transloco }}</button>
+  </div>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="isAttachmentPreviewOpen"
+  [modal]="true"
+  [closable]="true"
+  [header]="attachmentPreviewTitle"
+  [style]="{ width: 'min(900px, 98vw)' }"
+  (onHide)="closeAttachmentPreview()"
+>
+  @if (attachmentPreviewUrl) {
+    <div class="task-dialog__attachment-preview-wrap">
+      <img class="task-dialog__attachment-preview" [src]="attachmentPreviewUrl" [alt]="attachmentPreviewTitle" />
+    </div>
+  }
+</p-dialog>
+
+<p-dialog
+  [(visible)]="isDeleteModalOpen"
+  [modal]="true"
+  [closable]="true"
+  [header]="'admin.tasks.delete_title' | transloco"
+  [style]="{ width: 'min(460px, 96vw)' }"
+  (onHide)="closeDeleteModal()"
+>
+  @if (deleteError) {
+    <div class="task-scheduler__error">{{ deleteError | transloco }}</div>
+  }
+
+  @if (deleteTarget) {
+    <p>{{ 'admin.tasks.delete_confirm' | transloco:{ title: deleteTarget.title } }}</p>
+  }
+
+  <div class="task-dialog__actions">
+    <button type="button" class="task-scheduler__ghost" (click)="closeDeleteModal()">{{ 'admin.actions.cancel' | transloco }}</button>
+    <button type="button" class="task-scheduler__ghost task-scheduler__ghost--danger" (click)="confirmDelete()">{{ 'admin.actions.delete' | transloco }}</button>
+  </div>
+</p-dialog>

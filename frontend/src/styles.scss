@@ -47,6 +47,7 @@
   --brand-primary-dark: #0b5f58;
   --brand-on-primary: #f8fafc;
   --brand-shell-bg: var(--surface-soft);
+  --modal-overlay-bg: rgba(15, 23, 42, 0.55);
 
   /* PrimeNG theme tokens (global) */
   --p-primary-color: var(--accent);
@@ -81,6 +82,7 @@ html[data-theme="dark"] {
   --state-info-border: rgba(20, 184, 166, 0.35);
   --state-info-text: #93efe4;
   --state-link: #86dcd2;
+  --modal-overlay-bg: rgba(2, 8, 23, 0.78);
 }
 
 .pi.pi-telegram {
@@ -204,6 +206,89 @@ html[data-theme="dark"] .p-datepicker .p-datepicker-day:hover {
 html[data-theme="dark"] .p-datepicker .p-datepicker-day.p-disabled,
 html[data-theme="dark"] .p-datepicker .p-datepicker-day.p-disabled:hover {
   color: var(--brand-disabled) !important;
+}
+
+/*
+ * PrimeNG dialogs and overlays are rendered outside component trees
+ * (directly under <body>). Because of that, component-level scoping
+ * cannot reliably control their colors in dark mode.
+ *
+ * This global block enforces token-based surfaces for:
+ * - dialog shell (header/content/footer)
+ * - dialog close/utility icons
+ * - dimmed modal backdrop
+ * - autocomplete/multiselect dropdown panels
+ *
+ * Result:
+ * - no hard white surfaces in dark mode
+ * - consistent contrast with card/input colors
+ * - predictable behavior independent of view encapsulation
+ */
+.p-dialog-mask {
+  background: var(--modal-overlay-bg) !important;
+}
+
+.p-dialog {
+  background: var(--card-bg) !important;
+  color: var(--brand-text) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-content,
+.p-dialog .p-dialog-footer {
+  background: var(--card-bg) !important;
+  color: var(--brand-text) !important;
+}
+
+.p-dialog .p-dialog-header {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.p-dialog .p-dialog-footer {
+  border-top: 1px solid var(--border-color) !important;
+}
+
+.p-dialog .p-dialog-header .p-dialog-header-icon,
+.p-dialog .p-dialog-header .p-dialog-close-button {
+  color: var(--brand-text) !important;
+}
+
+.p-dialog .p-dialog-header .p-dialog-header-icon:hover,
+.p-dialog .p-dialog-header .p-dialog-close-button:hover {
+  background: var(--brand-blue-soft-light) !important;
+}
+
+/*
+ * Suggestion overlays are appended to body and bypass component styles.
+ * Keep them aligned with theme tokens so dialogs stay visually coherent.
+ */
+.p-autocomplete-overlay,
+.p-autocomplete-panel,
+.p-multiselect-overlay,
+.p-multiselect-panel {
+  background: var(--card-bg) !important;
+  color: var(--brand-text) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+.p-autocomplete-option,
+.p-multiselect-option {
+  color: var(--brand-text) !important;
+}
+
+.p-autocomplete-option:hover,
+.p-autocomplete-option.p-focus,
+.p-multiselect-option:hover,
+.p-multiselect-option.p-focus {
+  background: var(--brand-blue-soft-light) !important;
+}
+
+.p-multiselect-header {
+  background: var(--surface-soft) !important;
+  border-bottom: 1px solid var(--border-color) !important;
 }
 
 @font-face {

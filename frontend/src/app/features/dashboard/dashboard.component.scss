@@ -1,10 +1,314 @@
 .dashboard {
-  padding: 1rem 0;
+  display: grid;
+  gap: 1rem;
+  padding: 0.25rem 0 1.25rem;
 }
 
-.dashboard__card {
-  padding: 2rem;
+/*
+ * Dashboard contains several anchor-style controls (metric chips, icon links,
+ * footer CTA). Set a neutral baseline first so browser default link colors do
+ * not leak into themed cards, then specialize each variant below.
+ */
+.dashboard a {
+  color: inherit;
+}
+
+.dashboard__hero {
   border-radius: 18px;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(77, 201, 244, 0.28), transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(253, 184, 19, 0.22), transparent 42%),
+    linear-gradient(135deg, #ffffff, #f8fbfd);
+  box-shadow: var(--card-shadow);
+  border: 1px solid color-mix(in srgb, var(--brand-blue-deep) 14%, transparent);
+  padding: 1.2rem 1.25rem;
+}
+
+.dashboard__hero h2 {
+  margin: 0;
+}
+
+.dashboard__hero p {
+  margin: 0.35rem 0 0;
+  color: var(--brand-muted);
+}
+
+.dashboard__error {
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.dashboard__panel {
+  border-radius: 16px;
   background: var(--card-bg);
   box-shadow: var(--card-shadow);
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--brand-blue-deep) 8%, transparent);
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboard__panel--muted {
+  color: var(--brand-muted);
+}
+
+.dashboard__panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.dashboard__panel-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.dashboard__panel-head h3 {
+  margin: 0;
+  font-size: 1.03rem;
+}
+
+.dashboard__panel-head p {
+  margin: 0.35rem 0 0;
+  color: var(--brand-muted);
+  font-size: 0.88rem;
+}
+
+.dashboard__metric-chip {
+  align-self: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-blue-soft-light) 84%, white);
+  border: 1px solid color-mix(in srgb, var(--brand-blue-deep) 20%, transparent);
+  color: var(--brand-blue-deep);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.65rem;
+  white-space: nowrap;
+}
+
+.dashboard__metric-chip--link {
+  text-decoration: none;
+}
+
+.dashboard__metric-chip--link:visited {
+  color: var(--brand-blue-deep);
+}
+
+.dashboard__metric-chip--link:hover {
+  background: color-mix(in srgb, var(--brand-blue-soft) 82%, white);
+}
+
+.dashboard__collapse-btn {
+  border: none;
+  background: transparent;
+  color: var(--brand-blue-deep);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dashboard__collapse-btn i {
+  transition: transform 0.18s ease;
+}
+
+.dashboard__collapse-btn i.is-collapsed {
+  transform: rotate(-90deg);
+}
+
+.dashboard__empty {
+  color: var(--brand-muted);
+  padding: 0.2rem 0.1rem;
+}
+
+.dashboard__list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.dashboard__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 12px;
+  padding: 0.7rem 0.75rem;
+  background: color-mix(in srgb, var(--brand-blue-soft-light) 74%, white);
+  border: 1px solid color-mix(in srgb, var(--brand-blue-deep) 10%, transparent);
+}
+
+.dashboard__item--open {
+  border-inline-start: 4px solid #0284c7;
+}
+
+.dashboard__item--done {
+  border-inline-start: 4px solid #16a34a;
+}
+
+.dashboard__item-main {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.dashboard__item-main strong {
+  font-size: 0.93rem;
+}
+
+.dashboard__item-main small {
+  color: var(--brand-muted);
+  font-size: 0.8rem;
+}
+
+.dashboard__icon-link {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--brand-blue-deep);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.dashboard__icon-link:hover {
+  background: color-mix(in srgb, var(--brand-blue-soft) 82%, white);
+}
+
+.dashboard__panel-footer {
+  margin-top: 0.75rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid color-mix(in srgb, var(--brand-blue-deep) 10%, transparent);
+}
+
+.dashboard__footer-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+  font-weight: 600;
+  color: var(--brand-on-primary);
+  background: linear-gradient( 135deg, var(--accent-secondary), var(--brand-primary-dark));
+  border: 1px solid color-mix(in srgb, var(--brand-blue-deep) 16%, transparent);
+}
+
+.dashboard__footer-cta:visited {
+  color: var(--brand-on-primary);
+}
+
+.dashboard__footer-cta:hover {
+  color: var(--brand-blue-deep);
+  background: color-mix(in srgb, var(--brand-blue-soft) 76%, white);
+}
+
+@media (max-width: 860px) {
+  .dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard__panel-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard__metric-chip {
+    align-self: flex-start;
+  }
+
+  .dashboard__item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard__icon-link {
+    margin-top: 0.25rem;
+  }
+}
+
+/*
+ * Dark-mode tuning:
+ * - Hero gets a dedicated dark gradient surface to avoid "light card" effect.
+ * - Use :host-context because this file is component-scoped; the root theme
+ *   attribute lives on <html>, outside local encapsulation boundaries.
+ * - Link states (normal/visited/hover/focus) are explicitly defined so browser
+ *   defaults cannot introduce low-contrast blue/purple links.
+ */
+:host-context(html[data-theme='dark']) .dashboard__hero {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(56, 189, 248, 0.2), transparent 45%),
+    radial-gradient(circle at 88% 85%, rgba(20, 184, 166, 0.18), transparent 42%),
+    linear-gradient(135deg, #132036, #0f1a2d);
+  border-color: color-mix(in srgb, var(--brand-blue-light) 28%, transparent);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__hero h2 {
+  color: var(--text-strong);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__hero p {
+  color: color-mix(in srgb, var(--text-muted) 88%, #e2e8f0 12%);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__metric-chip {
+  background: color-mix(in srgb, var(--brand-blue-soft) 78%, var(--card-bg));
+  color: var(--text-strong);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__metric-chip--link,
+:host-context(html[data-theme='dark']) .dashboard__metric-chip--link:visited {
+  color: var(--text-strong);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__metric-chip--link:hover {
+  background: color-mix(in srgb, var(--brand-blue-soft-strong) 82%, var(--card-bg));
+}
+
+:host-context(html[data-theme='dark']) .dashboard__item {
+  background: color-mix(in srgb, var(--brand-blue-soft-light) 58%, var(--card-bg));
+  border-color: color-mix(in srgb, var(--brand-blue-light) 22%, transparent);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__icon-link {
+  background: color-mix(in srgb, var(--brand-blue-soft-strong) 65%, transparent);
+  color: var(--text-strong);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__icon-link:hover {
+  background: color-mix(in srgb, var(--brand-blue-soft-strong) 85%, var(--card-bg));
+}
+
+:host-context(html[data-theme='dark']) .dashboard__collapse-btn {
+  color: var(--text-strong);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__footer-cta:hover {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--brand-blue-soft-strong) 70%, var(--card-bg));
+}
+
+:host-context(html[data-theme='dark']) .dashboard__footer-cta,
+:host-context(html[data-theme='dark']) .dashboard__footer-cta:visited {
+  color: var(--brand-on-primary);
+}
+
+:host-context(html[data-theme='dark']) .dashboard__footer-cta:focus-visible,
+:host-context(html[data-theme='dark']) .dashboard__icon-link:focus-visible,
+:host-context(html[data-theme='dark']) .dashboard__metric-chip--link:focus-visible {
+  /* Strong keyboard outline for accessibility on dark backgrounds. */
+  outline: 2px solid color-mix(in srgb, var(--brand-blue-light) 70%, #ffffff 30%);
+  outline-offset: 2px;
 }
