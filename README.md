@@ -1,4 +1,4 @@
-# Nik Hatam WorkHub
+# Nik Hatam WorkHub Tasks
 
 Production-ready Laravel + Angular workspace platform for multilingual business operations.
 
